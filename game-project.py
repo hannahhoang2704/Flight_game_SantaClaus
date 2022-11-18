@@ -3,10 +3,14 @@ import random
 from geopy import distance
 import time, os, sys
 import pyfiglet
-from art import questions, answers
+from art import black_jack_logo
 import requests
 import json
 from count_down import statement
+import quiz
+import rock_paper_scissor
+import black_jack
+
 
 print(statement)                        #Countdown the days till Christmas
 
@@ -124,7 +128,7 @@ class Airport:
         return self.name + "latitude: " + self.latitude + "longitude: " + self.longitude
 
     def airport_info(self):
-        print(f"Name: {self.name}\nDegree: {self.deg}")
+        return print(f"You're in {self.name}\nDegree: {self.deg}")
 
     def calc_distance_to_Rov(self):                             #Distance from that airport to Rovaniemi
         dist = distance.distance(self.deg, rovaniemi_deg).km
@@ -140,8 +144,7 @@ class Airport:
             # print(json.dumps(json_response, indent=2))
             description = json_response["weather"][0]["description"]
             temp = json_response["main"]["temp"]
-            print(
-                f"Weather in {self.name} is {description} with temperature of {temp} Celsius degree")
+            print(f"Weather in {self.name} is {description} with temperature of {temp} Celsius degree")
 
 
 class TransitAirport:
@@ -150,23 +153,23 @@ class TransitAirport:
         #self.icao = icao
         #self.deg = deg
         self.airports_list = []
-        self.icao_list = []
+        #self.icao_list = []
         self.degree_list = []
 
 
 class Player:
-    def __init__(self, name, gift=0, co2_consumption=0):
+    def __init__(self, name, gift=100, co2_consumption=0):
         self.name = name
         self.gift = gift
         self.co2_consumption = co2_consumption
 
     def get_info(self):
-        print(f"Name: {self.name}\nGift: {self.gift}\nCo2_consumption: {self.co2_consumption}")
+        return print(f"Name: {self.name}\n{self.gift} gifts\nCo2_consumption: {self.co2_consumption}")
 
     def get_gift(self):
         nr_random = random.randint(1,5)
         sql = "SELECT treasure_name, score from score_change"
-        sql += " WHERE id=" + nr_random
+        sql += " WHERE id=" + str(nr_random)
         cursor = connection.cursor()
         cursor.execute(sql)
         result = cursor.fetchall()
@@ -175,13 +178,13 @@ class Player:
                 row[0]
                 giftplus = int(row[1])
                 print(f"You got {row[0]}, and earn {row[1]} gifts")
-        return giftplus
         self.gift += giftplus
+        return self.gift
 
     def deduct_gift(self):
         nr_random = random.randint(6,8)
         sql = "SELECT treasure_name, score from score_change"
-        sql += " WHERE id=" + nr_random
+        sql += " WHERE id=" + str(nr_random)
         cursor = connection.cursor()
         cursor.execute(sql)
         result = cursor.fetchall()
@@ -190,33 +193,16 @@ class Player:
                 row[0]
                 giftminus = int(row[1])
                 print(f"You got {row[0]}, and lost {row[1]} gifts")
-        return giftminus
         self.gift += giftminus
+        return self.gift
 
 
-
-######Different game function
-def rock_paper_scissor():
-    pass
-    return print("RPS")
-
-def hang_man():
-    pass
-    return print("HM")
-
-def quiz():
-    pass
-    return print("Q")
-
-def black_jack():
-    pass
-    return print("BJ")
 ###############
 
 #MAIN PROGRAM
 
 list_of_visited_icao = []
-
+player_name = str(input("Enter your name: "))
 municipality = input('From which city you want to start your journey: ')
 
 while check_city(municipality) == 0 or municipality.lower() == "rovaniemi":  # Player can't choose Rovaniemi as a starting point
@@ -244,7 +230,7 @@ else:
     print(f"Distance from {airport_dep.name} to Rovaniemi is {airport_dep.calc_distance_to_Rov():.2f} km")
 
 route = TransitAirport()
-
+player1 = Player(player_name, 100, 1000)
 coordinator_scope_x = rovaniemi_deg[0] - dep_deg_lat                           #calculate the coordinator(x,y) scope within depature airport and Rovaniemi airport
 coordinator_scope_y = rovaniemi_deg[1] - dep_deg_long
 
@@ -271,13 +257,14 @@ for i in range(5):                                                              
     airport_spot_deg = pick_airport(route.degree_list[i][0], point_x, route.degree_list[i][1], point_y)[1]
 
     new_transit = Airport(airport_spot, airport_spot_deg[0], airport_spot_deg[1])
-    new_transit.weather_check()                                                 #weather info of the transit
 
-    print(f"You are now in: {new_transit.airport_info()}")
+    new_transit.airport_info()   # call our the airport where you are
+    new_transit.weather_check()  # weather info of the transit
+
     route.airports_list.append(airport_spot)
     route.degree_list.append(airport_spot_deg)
     #print(route1.airports_list)
-    print(f"{new_transit.calc_distance_to_Rov():.2f} km")               # Distance from certain transit airport to Rovaniemi
+    print(f"You are {new_transit.calc_distance_to_Rov():.2f} km away from Rovaniemi")               # Distance from certain transit airport to Rovaniemi
 
 
 
@@ -288,18 +275,22 @@ for i in range(5):                                                              
         choose_game = int(input("Enter number of the game you want to play:\n1. Quiz\n2. Rock paper scissor\n3. Hang man\n4. Black Jack\n"))
     else:
         if choose_game == 1:
-            quiz()
+            if quiz.questions_answers() == True:                                #Get more gift or deduct gift
+                player1.get_gift()
+            else:
+                player1.deduct_gift()
         elif choose_game == 2:
-            rock_paper_scissor()
-        elif choose_game == 3:
-            hang_man()
+            if rock_paper_scissor.rock_paper_scissors() == True:
+                player1.get_gift()
+            else:
+                player1.deduct_gift()
         elif choose_game == 4:
-            black_jack()
+            if black_jack.black_jack() == True:
+                player1.player1.get_gift()
+            else:
+                player1.deduct_gift()
 
-
-
-
-
+    player1.get_info()                      #Print out current score
 
 
 
