@@ -3,13 +3,12 @@ import random
 from geopy import distance
 import time, os, sys
 import pyfiglet
-from art import black_jack_logo
 import requests
 import json
 from count_down import statement
-import quiz
-import rock_paper_scissor
-import black_jack
+from quiz import questions_answers
+from rock_paper_scissor import rock_paper_scissors
+from black_jack import black_jack
 
 
 print(statement)                        #Countdown the days till Christmas
@@ -66,7 +65,7 @@ def call_airport(icao):
     result = cursor.fetchall()
     if cursor.rowcount > 0:
         for row in result:
-            print(f"\nYou are now in {row[0]}. Get ready for your flight!\n")
+            print(f"\nYou are now in {row[0]}.")
     return row[0]
 
 
@@ -84,6 +83,8 @@ def airport_position_by_icao(ICAO):
             #print(deg)
     return deg
 
+
+rovaniemi_deg = airport_position_by_icao("EFRO")                    ###############ROVANIEMI degree of latitude & longitude
 
 #Function: call random airport within the coordinator scope
 
@@ -109,7 +110,7 @@ def pick_airport(x1, x, y1, y):
     return list_of_airport[random_nr], list_of_deg[random_nr]                               #random airport to transit within the range
 
 
-rovaniemi_deg = airport_position_by_icao("EFRO")                    #ROVANIEMI degree of latitude & longitude
+
 
 
 
@@ -147,14 +148,28 @@ class Airport:
             print(f"Weather in {self.name} is {description} with temperature of {temp} Celsius degree")
 
 
+
 class TransitAirport:
     def __init__(self):
-        #self.name = name
-        #self.icao = icao
-        #self.deg = deg
         self.airports_list = []
-        #self.icao_list = []
         self.degree_list = []
+
+    def visited_airport(self, name, deg):
+        self.airports_list.append(name)
+        self.degree_list.append(deg)
+        return
+
+    def distance_between_each_airport(self, index:int):
+        d = round(distance.distance(self.degree_list[index], self.degree_list[index-1]).km,2)
+        return d
+
+    def api_co2(self, d):
+        convert = d * 1.852
+        f = f"https://despouy.ca/flight-fuel-api/q/?aircraft=60006b&distance={convert}"
+        response = requests.get(f).json()
+        amount = round(response[0]['co2'],2)
+        return amount
+
 
 
 class Player:
@@ -196,8 +211,12 @@ class Player:
         self.gift += giftminus
         return self.gift
 
+    def co2_add(self, amount):
+        self.co2_consumption += amount
+        return self.co2_consumption
 
-###############
+
+##############################################################################
 
 #MAIN PROGRAM
 
@@ -225,78 +244,81 @@ else:
     dep_deg_lat = airport_position_by_icao(location_by_ICAO)[0]                 #Latitude and longitude degree of departure airport
     dep_deg_long = airport_position_by_icao(location_by_ICAO)[1]
 
-    airport_dep = Airport(airport_dep_name, dep_deg_lat, dep_deg_long)            #store depature airport in class Airport
+    airport_dep = Airport(airport_dep_name, dep_deg_lat, dep_deg_long)          #store depature airport in class Airport
     print(airport_dep.airport_info())
     print(f"Distance from {airport_dep.name} to Rovaniemi is {airport_dep.calc_distance_to_Rov():.2f} km")
 
 route = TransitAirport()
-player1 = Player(player_name, 100, 1000)
+player1 = Player(player_name)
 coordinator_scope_x = rovaniemi_deg[0] - dep_deg_lat                           #calculate the coordinator(x,y) scope within depature airport and Rovaniemi airport
 coordinator_scope_y = rovaniemi_deg[1] - dep_deg_long
 
-dist_between_each_scope_x = round(coordinator_scope_x/4,4)
-dist_between_each_scope_y = round(coordinator_scope_y/4,4)
-#print(dist_between_each_scope_x)
-#print(dist_between_each_scope_y)
+dist_between_each_scope_x = round(coordinator_scope_x/5,4)
+dist_between_each_scope_y = round(coordinator_scope_y/5,4)
 
-route.airports_list.append(airport_dep.name)
-#print(route1.airports_list)
-route.degree_list.append(airport_dep.deg)
-#print(route1.degree_list)
+route.visited_airport(airport_dep.name, airport_dep.deg)                        #add departure airport to the list
 
+##transit via 5 different airports to play game and collect gift
 
 for i in range(5):                                                              #transit via 5 different airports before arrive Rovaniemi
     print(route.airports_list[i])
     point_x = route.degree_list[i][0] + dist_between_each_scope_x
-    #print(point_x)
     point_y = route.degree_list[i][1] + dist_between_each_scope_y
-    #print(point_y)
+
     pick_airport(route.degree_list[i][0], point_x, route.degree_list[i][1], point_y)
 
-    airport_spot = pick_airport(route.degree_list[i][0], point_x, route.degree_list[i][1], point_y)[0]          #call the transit airport
+    airport_name = pick_airport(route.degree_list[i][0], point_x, route.degree_list[i][1], point_y)[0]          #call the transit airport
     airport_spot_deg = pick_airport(route.degree_list[i][0], point_x, route.degree_list[i][1], point_y)[1]
 
-    new_transit = Airport(airport_spot, airport_spot_deg[0], airport_spot_deg[1])
+    new_transit = Airport(airport_name, airport_spot_deg[0], airport_spot_deg[1])
 
     new_transit.airport_info()   # call our the airport where you are
     new_transit.weather_check()  # weather info of the transit
 
-    route.airports_list.append(airport_spot)
-    route.degree_list.append(airport_spot_deg)
-    #print(route1.airports_list)
-    print(f"You are {new_transit.calc_distance_to_Rov():.2f} km away from Rovaniemi")               # Distance from certain transit airport to Rovaniemi
+    route.visited_airport(airport_name, new_transit.deg)    #add the transit airport to the list
+    dist_between_each_a = route.distance_between_each_airport(i + 1)
+    print(f"You've flew {dist_between_each_a} km")        #Distance between each airport
+    co2_each_transit = route.api_co2(dist_between_each_a)
+    print(f"You've just consumed {co2_each_transit}")                   #Print out the co2 consumption after moved to new transit
+    print(f"Total consumption: {player1.co2_add(co2_each_transit)}")    #Total amount of C02 consumption
+    print(f"Still {new_transit.calc_distance_to_Rov():.2f} km away from Rovaniemi")               # Distance from certain transit airport to Rovaniemi
 
+    #Player chooses the game to play in every stop
 
-
-    #Choose the game to play in each place
-
-    choose_game = int(input("Enter number of the game you want to play:\n1. Quiz\n2. Rock paper scissor\n3. Hang man\n4. Black Jack\n"))
+    choose_game = int(input("Enter number of the game you want to play:\n1. Quiz\n2. Rock paper scissor\n3. Black Jack\n\n"))
     while choose_game not in range(1,5):
-        choose_game = int(input("Enter number of the game you want to play:\n1. Quiz\n2. Rock paper scissor\n3. Hang man\n4. Black Jack\n"))
+        choose_game = int(input("Enter number of the game you want to play:\n1. Quiz\n2. Rock paper scissor\n3. Black Jack\n\n"))
     else:
         if choose_game == 1:
-            if quiz.questions_answers() == True:                                #Get more gift or deduct gift
+            if questions_answers() == True:  #Get more gift or deduct gift
                 player1.get_gift()
             else:
                 player1.deduct_gift()
         elif choose_game == 2:
-            if rock_paper_scissor.rock_paper_scissors() == True:
+            if rock_paper_scissors() == True:
                 player1.get_gift()
-            else:
+            elif rock_paper_scissors() == False:
                 player1.deduct_gift()
-        elif choose_game == 4:
-            if black_jack.black_jack() == True:
-                player1.player1.get_gift()
-            else:
+        elif choose_game == 3:
+            if black_jack() == True:
+                player1.get_gift()
+            elif black_jack() == False:
                 player1.deduct_gift()
 
     player1.get_info()                      #Print out current score
+    if player1.gift <= 0:                   #The game stop when player can't collect and more gift to continue the trip
+        print("Oops! Mission incompleted!")
+        break
+    #print(route.airports_list)
+    #print(route.degree_list)
 
+##Game ends and player arrive the Rovaniemi airport
 
-
-
-
-
-
-
+rov_name = call_airport("EFRO")
+route.visited_airport(rov_name, rovaniemi_deg)              #Add Rovaniemi airport to the visted airport list
+last_transit_to_rov = route.distance_between_each_airport(len(route.airports_list)-1)
+co2_period = route.api_co2(last_transit_to_rov)
+print(f"You've just consumed {co2_period}")
+player1.co2_add(co2_period)
+player1.get_info()
 
