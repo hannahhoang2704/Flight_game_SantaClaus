@@ -116,10 +116,6 @@ def pick_airport(x1, x, y1, y):
 
 class Airport:
     def __init__(self, name, latitude, longitude):
-        #self.list_of_all_airport = []
-        #self.icao_list= []
-        #self.degree_list = []
-        #self.icao = icao
         self.name = name
         self.longitude = longitude
         self.latitude = latitude
@@ -280,7 +276,7 @@ for i in range(5):                                                              
     print(f"You've flew {dist_between_each_a} km")        #Distance between each airport
     co2_each_transit = route.api_co2(dist_between_each_a)
     print(f"You've just consumed {co2_each_transit}")                   #Print out the co2 consumption after moved to new transit
-    print(f"Total consumption: {player1.co2_add(co2_each_transit)}")    #Total amount of C02 consumption
+    print(f"Total consumption: {round(player1.co2_add(co2_each_transit),2)}")    #Total amount of C02 consumption
     print(f"Still {new_transit.calc_distance_to_Rov():.2f} km away from Rovaniemi")               # Distance from certain transit airport to Rovaniemi
 
     #Player chooses the game to play in every stop
@@ -297,12 +293,12 @@ for i in range(5):                                                              
         elif choose_game == 2:
             if rock_paper_scissors() == True:
                 player1.get_gift()
-            elif rock_paper_scissors() == False:
+            else:
                 player1.deduct_gift()
         elif choose_game == 3:
             if black_jack() == True:
                 player1.get_gift()
-            elif black_jack() == False:
+            else:
                 player1.deduct_gift()
 
     player1.get_info()                      #Print out current score
@@ -318,7 +314,6 @@ rov_name = call_airport("EFRO")
 route.visited_airport(rov_name, rovaniemi_deg)              #Add Rovaniemi airport to the visted airport list
 last_transit_to_rov = route.distance_between_each_airport(len(route.airports_list)-1)
 co2_period = route.api_co2(last_transit_to_rov)
-print(f"You've just consumed {co2_period}")
+print(f"You've just consumed {round(co2_period,2)}")
 player1.co2_add(co2_period)
 player1.get_info()
-
