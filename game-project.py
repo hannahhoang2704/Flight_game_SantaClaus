@@ -6,7 +6,7 @@ import pyfiglet
 import requests
 import json
 from count_down import statement
-from questions_func import questions_answers
+from quiz import questions_answers
 from rock_paper_scissor import rock_paper_scissors
 from black_jack import black_jack
 
