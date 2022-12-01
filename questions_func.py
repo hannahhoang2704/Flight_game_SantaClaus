@@ -1,6 +1,8 @@
 import random
 
+
 def questions_answers():
+
     # Questionaires and answers
     questions = (
         "Wasting less food is a way to reduce greenhouse gas emissions.",  # 0
@@ -58,20 +60,18 @@ def questions_answers():
     user_answer = user_answer.lower()
 
     right_answer = answers[random_index_number]
-    questions.pop(
-    random_index_number)  # pop the question from the list to avoid duplicated question in next destination
+    questions.pop(random_index_number)  # pop the question from the list to avoid duplicated question in next destination
     answers.pop(random_index_number)
 
     # Check if players answer correct or not
 
     if user_answer == right_answer:
         print(f"Good job! That was the correct answer.")
-
-
-    elif user_answer != right_answer:
+        return True
+    else:
         print(f"You answered incorrectly")
+        return False
 
 
-questions_answers()
 
 
