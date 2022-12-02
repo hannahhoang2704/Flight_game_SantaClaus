@@ -6,43 +6,47 @@
     <!--Font google-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,600;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,600;1,700&display=swap"
+          rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
+    <script src="santa.js" defer></script>
     <!--CSS stylesheet-->
     <link rel="stylesheet" href="stylesheet.css">
 </head>
-<body >
+<body>
 <div class="snowflakes" aria-hidden="true">
-  <div class="snowflake">
-  ❅
-  </div>
-  <div class="snowflake">
-  ❅
-  </div>
-  <div class="snowflake">
-  ❆
-  </div>
-  <div class="snowflake">
-  ❄
-  </div>
-  <div class="snowflake">
-  ❅
-  </div>
-  <div class="snowflake">
-  ❆
-  </div>
+    <div class="snowflake">
+        ❅
+    </div>
+    <div class="snowflake">
+        ❅
+    </div>
+    <div class="snowflake">
+        ❆
+    </div>
+    <div class="snowflake">
+        ❄
+    </div>
+    <div class="snowflake">
+        ❅
+    </div>
+    <div class="snowflake">
+        ❆
+    </div>
 </div>
 <div class="nav-container">
-    <header  class="logo"><img src="image/random-image/beard_dark.png" alt="Logo" width=300px></header>
+    <header class="logo"><img src="image/random-image/beard_dark.png" alt="Logo" width=300px></header>
 
     <nav class="nav-bar">
         <ul>
-            <li class="nav-bar-button"><a class= "nav-btn nav-link-ltr" href="Game.html">Start Game</a></li>
-            <li class="nav-bar-button"><a class= "nav-btn nav-link-ltr" href="Exit.html">Exit</a></li>
+            <li class="nav-bar-button"><a class="nav-btn nav-link-ltr" href="Game.html">Start Game</a></li>
+            <li class="nav-bar-button"><a class="nav-btn nav-link-ltr" href="Exit.html">Exit</a></li>
         </ul>
     </nav>
 </div>
 <main>
-    <div class="instructions" >
+    <div class="instructions">
         <div class="figure">
             <img src="image/page-image/stick-person.png" width=300 alt="Stickerman"
                  class="stick-man">
@@ -54,21 +58,36 @@
                 challenge you to play a game with them. If you win you get to collect some gifts if you lose your new
                 passengers get your gifts. Some would call it robbery; we call it fair play. The winner of this game is
                 whoever collects the most gifts!</p>
-           <div class="instructions-btn">
-                <div class="button">
-                    <label for="uname"><b>Username</b></label>
-                    <input type="text" placeholder="Enter Username" name="uname" required>
 
-                    <button type="submit">
-                        <a href="Game.html">Start Game</a>
-                    </button>
-                </div>
+
+            <form action="Game.html" method="get">
+                <p>Name:
+                    <br/>
+                    <input type="text" name="name"><br>
+                    <br/>
+                    Where do you want to fly from:
+                    <input type="text" name="municipality" required>
+
+                    <input type="submit" value="submit">
+                </p>
+            </form>
+
+            <p>Choose ICAO :</p>
+
+            <form>
+                <input type="radio" id="html" name="fav_language" value="HTML">
+                <label for="html">HTML</label><br>
+                <input type="radio" id="css" name="fav_language" value="CSS">
+                <label for="css">CSS</label><br>
+                <input type="radio" id="javascript" name="fav_language" value="JavaScript">
+                <label for="javascript">JavaScript</label>
+            </form>
+        
         </div>
 
     </div>
 
 </main>
-
 
 
 </body>
