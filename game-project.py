@@ -22,6 +22,15 @@ connection = mysql.connector.connect(
     autocommit=True
 )
 
+#COMMENT OUT ONE OF THE CONNECTION TO DATABASE!!!!
+connection = mysql.connector.connect(
+    host='127.0.0.1',
+    port= 3306,
+    database='game_project',
+    user='root',
+    password='MyN3wP4ssw0rd',  # !QAZ2wsx#EDC or MyN3wP4ssw0rd ##CHECK PASSWORD TO RUN THE PROGRAM!!!
+    autocommit=True
+)
 
 # Function: check if the city exists in database
 def check_city(city):
