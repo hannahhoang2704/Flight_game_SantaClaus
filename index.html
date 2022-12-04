@@ -60,19 +60,20 @@
                 whoever collects the most gifts!</p>
 
 
-            <form method="get"> <!--action="Game.html" -->
-                <p>Name:</p>
-                    <input type="text" name="name" placeholder="Your name"><br>
-                </form>
-            <p>Where do you want to fly from:</p>
-            <input id="keyword" type="text" name="municipality" placeholder="City" required>
+            <form id="username-form" action="http://127.0.0.1:3000/" method="post">  <!-- -->
+                <label for="user-name">Your name:</label>
+                <input id="user-name" type="text" name="name" placeholder="Your name">
+                <input id="name-button" type="submit" value="Go!">
+                <p id="welcome"></p>
+            </form>
+                <p>Where do you want to fly from:</p>
+                <input id="city" type="text" name="municipality" placeholder="City" required>
+                <input id="start" type="submit" value="Search">
 
-            <input id="start" type="submit" value="Search">
-
-            <p>Choose ICAO :</p>
-            <select name="" id="result">
-
-            </select>
+            <div id="ICAO-fetch">
+            <!--<p>Choose ICAO:</p>
+            <select name="" id="airport-fetch"></select>-->
+            </div>
 
         </div>
 
