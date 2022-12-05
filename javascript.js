@@ -13,16 +13,7 @@ let icao_start;                       //ICAO of the depature airport
 const icao_rovaniemi = 'EFRO';               //ICAO of Rovaniemi
 let currentAirport;
 
-//map
-const map = L.map('map').setView([51.505, -0.09], 8);
 
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-}).addTo(map);
-
-L.marker([51.5, -0.09]).addTo(map)
-    .bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-    .openPopup();
 
 
 
@@ -33,7 +24,11 @@ function get_player_name(evt){
   const name = document.querySelector('#user-name').value;
   document.getElementById('welcome').innerText = `Hi ${playerName.value}, let's start your journey!`;
   async function player_name(){
-
+    try{
+      const gameData = await fetch('http://127.0.0.1:3000/')
+    }catch(error){
+      console.log(error);
+    }
   }
 }
 playerName.addEventListener('submit', get_player_name);
@@ -103,11 +98,9 @@ function airport_start(evt){
   icao_start = selectOption.options[selectOption.selectedIndex].value;
   console.log(icao_start);
 
-  run_process();
-
-  //getAirportPosition(icao_start);                                                  //fetch the departure airport info
+  getAirportPosition(icao_start);                                                  //fetch the departure airport info
   //getAirportPosition(icao_rovaniemi);                                               //fetch the info of Rovaniemi airport
-   airport_route();
+  // airport_route();
 }
 
 
