@@ -8,9 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,600;1,700&display=swap"
           rel="stylesheet">
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    
+
     <!--CSS stylesheet-->
     <link rel="stylesheet" href="stylesheet.css">
 </head>
@@ -48,6 +49,20 @@
     </div>
     <div class="container">
 
+        <div>
+            <form id="username-form">  <!-- -->
+                    <label for="user-name">Your name:</label>
+                    <input id="user-name" type="text" name="name" placeholder="Your name">
+                    <input id="name-button" type="submit" value="Go!">
+                    <p id="welcome"></p>
+            </form>
+                    <p>Where do you want to fly from:</p>
+                    <input id="city" type="text" name="municipality" placeholder="City" required>
+                    <input id="start" type="submit" value="Search">
+
+                    <div id="ICAO-fetch">
+                    </div>
+        </div>
     <main class="flex-wrap">
 
         <!---<div class="maps">Maps</div>--->
@@ -95,11 +110,9 @@
     </main>
 </div>
 </div>
-    
+
 <!--Javascript link-->
 <script src="javascript.js" defer></script>
+
 </body>
-    
-
-
 </html>
