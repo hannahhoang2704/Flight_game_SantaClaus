@@ -74,29 +74,30 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+
+#gamer input departure airport and name
 @app.route('/gamerinfo')
 def gamerinfo():
     args = request.args
     name = args.get('name')
     location = args.get('location')
     print(name, location)
-    #json_data = fly(name, 100, 0)
     sql = "INSERT into game (screen_name, location) "
     sql += "VALUES ('" + name + "','" + location + "')"
     print(sql)
     cursor = connection.cursor(dictionary=True)
     cursor.execute(sql)
-    sql2 = "SELECT * from game WHERE "
-    sql2 += "id=" + str(cursor.lastrowid) +";"
+    sql2 = "SELECT * from game "
+    sql2 += "WHERE id=" + str(cursor.lastrowid) +";"
     print(sql2)
     cursor.execute(sql2)
     result = cursor.fetchone()
-    print(result)
     ap = airport(location)
     result['airport'] = ap
+    print(json.dumps(result))
     return result
 
-
+#fetch airport in the city
 def municipality_search(city):
     #icao_suggested_list = []
     sql = "SELECT ident, name FROM airport"
@@ -123,6 +124,7 @@ def airport_search(city):
     response = municipality_search(city)
     return response
 
+
 def fetch_airport_names_by_icao_code(icao):
     sql  = "SELECT ID, ident, name, municipality, latitude_deg, longitude_deg FROM airport"
     sql += " WHERE ident='" + icao + "'"
@@ -135,7 +137,7 @@ def fetch_airport_names_by_icao_code(icao):
 
     return "", "", "", ""
 
-@app.route('/airport/<icao>')      # decorator
+@app.route('/airport/<icao>')
 def airport(icao):
     name, location, latitude, longitude = fetch_airport_names_by_icao_code(icao)
     response = {
@@ -146,6 +148,32 @@ def airport(icao):
         "Long": longitude
     }
     return response
+
+
+#Fetch weather condition when entering longitude and latitude of the airport
+
+@app.route('/weather')
+def weather():
+    args = request.args
+    latitude = args.get('lat')
+    longitude = args.get('long')
+    print(longitude, latitude)
+    request_link = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=aa8e935a3667b6a53c9bf49d4ba2904a"
+    response = requests.get(request_link).json()
+    print(json.dumps(response, indent=2))
+    description = response["weather"][0]["description"]
+    temp = response["main"]["temp"]
+    wind = response['wind']['speed']
+    icon = response["weather"][0]['icon']
+    jsonData = {
+        'description': description,
+        'temperature': temp,
+        'wind': wind,
+        'icon': icon
+    }
+    print(jsonData)
+    return jsonData
+
 
 @app.route('/airportdistance')
 def calculate_distance_between_airports():
