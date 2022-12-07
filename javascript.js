@@ -2,16 +2,25 @@
 
 //start game page_ index.html
 
-//const playerName = document.querySelector('#username-form');        //username's form
 const search = document.getElementById('start');                //button to fetch all the airports in chosen city
 const city = document.getElementById('city');                   //input of city
 const div_ICAO = document.getElementById('ICAO-fetch')          //div contain all the ICAO element
 const ICAO_p = document.createElement('p');                     //Message to player after choose the city
+
+
+//airport weather
+const temperature = document.getElementById('airport-temp');
+const weatherCondition = document.getElementById('airport-conditions');
+const windSpeed = document.getElementById('airport-wind');
+const weatherIcon = document.getElementById('weather-icon');
+
+
 let departureAirport;                   //departure airport name
 let icao_start;                       //ICAO of the depature airport
 const icao_rovaniemi = 'EFRO';               //ICAO of Rovaniemi
 let currentAirport =" ";
-
+let currentAirport_long;
+let currentAirport_lat;
 
 
 
@@ -36,16 +45,14 @@ function drawMapWithMarker(pos, icao) {
 }
 
 
-//player's name
-async function player_name(){
-    try{
-      const gameData = await fetch('http://127.0.0.1:5200/gamerinfo?player=' + name)
-      const jsonName = await gameData.json();
-      console.log(jsonName)
-    }catch(error){
-      console.log(error);
-    }
-  }
+//function to update the weather in HTML
+function updateWeather(temp, condition, wind, icon){
+  temperature.innerHTML = `<span>${temp}°C</span>`;
+  weatherCondition.innerHTML = `<span>${condition}</span>`;
+  windSpeed.innerHTML = `<span>${wind} m/s</span>`;
+  weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) +'@2x.png';
+}
+
 
 //fetch the airport info(ICAO, name, long, lat) where you want to flight to
 async function getAirportPosition(icao){
@@ -53,18 +60,28 @@ async function getAirportPosition(icao){
 
           const userName = document.querySelector('#user-name').value;
           document.getElementById('welcome').innerText = `Hi ${userName}, let's start your journey!`;
-          const response = await fetch('http://127.0.0.1:5200/gamerinfo?name=' +userName + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
+          const response = await fetch('http://127.0.0.1:5100/gamerinfo?name=' +userName + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
           const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
           const pos = [jsonData.airport.Lat, jsonData.airport.Long];                                  // create position array for leaflet library
           console.log(jsonData);     // log the result to the console
           console.log(jsonData.airport.Name, jsonData.airport.Lat, jsonData.airport.Long )
           // Show the airport name to the screen
-    
-    
+
           currentAirport = jsonData.airport.Name;
-          console.log('current airport:' + currentAirport);
+
+          console.log('current airport: ' + currentAirport);
+          currentAirport_lat = jsonData.airport.Lat;
+          currentAirport_long = jsonData.airport.Long;
+
+          //console.log('Latitude: ' + currentAirport_lat)
+          //console.log('Longitude: ' + currentAirport_long)
+
+          //Add current airport name in Airport name h2
           const airportUpdateName = document.getElementById('airport-name');
           airportUpdateName.innerHTML = `<span>${currentAirport}</span>`;
+
+          //update player name,gifts and co2 consumption
+
           const name = jsonData.screen_name;
           const nameUpdate = document.getElementById('player-name');
           nameUpdate.innerText = `PLayer name: ${name}`;
@@ -74,10 +91,16 @@ async function getAirportPosition(icao){
           const currentco2 = jsonData.co2_consumed;
           const currentco2Update = document.getElementById('consumed');
           currentco2Update.innerText = currentco2
-          
-    
+
           // and draw the map
           drawMapWithMarker(pos, icao)
+
+
+          //fetch weather
+          const responseWeather = await fetch('http://127.0.0.1:5100/weather?lat=' + currentAirport_lat + '&long=' + currentAirport_long);    // starting data download, fetch returns a promise which contains an object of type 'response'
+          const jsonDataWeather = await responseWeather.json();
+          console.log(jsonDataWeather)
+          updateWeather(jsonDataWeather.temperature, jsonDataWeather.description,jsonDataWeather.wind, jsonDataWeather.icon)
 
       } catch (error) {
           console.log(error.message);
@@ -90,7 +113,6 @@ async function getAirportPosition(icao){
 //get distance between 2 airport
 async function getAirportDistance(icao_start, icao_end) {
     let jsonData;
-
     try {
         const response = await fetch('http://127.0.0.1:3000/airportdistance?start=' + icao_start + '&end=' + icao_end);    // starting data download, fetch returns a promise which contains an object of type 'response'
         jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
@@ -103,35 +125,23 @@ async function getAirportDistance(icao_start, icao_end) {
     }
 }
 
-//promise 2 asynchronous
-async function run_process(){
-  let res;
-  try{
-    res = await Promise.all([
-       getAirportPosition(icao_start),
-       getAirportPosition(icao_rovaniemi),
-    ]);
-       console.log('Success>>', res);
-  } catch(err){
-    console.log('Fail>>', res, err);
-  }
-}
+
 
 //Check how far from departure airport to Rovaniemi
 function airport_start(evt) {
   evt.preventDefault();
   const selectOption = document.getElementById('airport-fetch');          //get the ICAO number of the chosen airport
   icao_start = selectOption.options[selectOption.selectedIndex].value;
-  console.log(icao_start);
+  //console.log(icao_start);
 
   getAirportPosition(icao_start);                                                  //fetch the departure airport info
   //getAirportPosition(icao_rovaniemi);                                               //fetch the info of Rovaniemi airport
-  // airport_route();
+  //airport_route_distance();             //check distance between departure airport to Rovaniemi airport
 }
 
 
 //print in console the distance between departure airport to rovaniemi airport
-  function airport_route() {
+  function airport_route_distance() {
     getAirportDistance(icao_start, icao_rovaniemi).then(function(distance) {
       console.log('Distance = ' + distance + 'km')
     })
@@ -172,11 +182,11 @@ function airport_start(evt) {
   }
 
   async function airportFetches() {                 // asynchronous function is defined by the async keyword
-    div_ICAO.innerHTML = "";
-    console.log('asynchronous download begins');
+    div_ICAO.innerHTML = "";                        //empty the select option of game
+    //console.log('asynchronous download begins');
     try {                                               // error handling: try/catch/finally
       console.log(city.value);
-      const response = await fetch('http://127.0.0.1:5200/' + city.value);    // starting data download, fetch returns a promise which contains an object of type 'response'
+      const response = await fetch('http://127.0.0.1:5100/' + city.value);    // starting data download, fetch returns a promise which contains an object of type 'response'
       const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
       console.log(jsonData[0]['Airport name']);
 
@@ -187,10 +197,11 @@ function airport_start(evt) {
       div_ICAO.appendChild(ICAO_p);
 
     } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
-      console.log('asynchronous load complete');
+      //console.log('asynchronous load complete');
     }
   }
 
 
 //call-back function to fetch all airport in chosen city
 search.addEventListener('click', fetch_airport);
+
