@@ -181,3 +181,9 @@ drop column gifts;
 alter table
 add gifts varchar(255) DEFAULT 1000;
 
+alter table
+drop column co2_consumed;
+
+alter table
+add co2_consumed varchar(255) DEFAULT 0;
+
