@@ -14,7 +14,10 @@ const icao_rovaniemi = 'EFRO';               //ICAO of Rovaniemi
 let currentAirport;
 
 
-//maps function
+
+
+
+//Add maps
 
 let map;
 
@@ -37,7 +40,7 @@ function drawMapWithMarker(pos, icao) {
 //player's name
 async function player_name(){
     try{
-      const gameData = await fetch('http://127.0.0.1:3000/gamerinfo?player=' + name)
+      const gameData = await fetch('http://127.0.0.1:5100/gamerinfo?player=' + name)
       const jsonName = await gameData.json();
       console.log(jsonName)
     }catch(error){
@@ -45,13 +48,13 @@ async function player_name(){
     }
   }
 //retrieve player's name in database
-function get_player_name(evt){
+/*function get_player_name(evt){
   evt.preventDefault();
   const name = document.querySelector('#user-name').value;
   document.getElementById('welcome').innerText = `Hi ${name}, let's start your journey!`;
   player_name();
 }
-playerName.addEventListener('submit', get_player_name);
+playerName.addEventListener('submit', get_player_name);*/
 
 
 //Greeting to player
@@ -62,10 +65,12 @@ playerName.addEventListener('submit', get_player_name);
 //fetch the airport info(ICAO, name, long, lat) where you want to flight to
 async function getAirportPosition(icao){
   try {
-          const response = await fetch('http://127.0.0.1:3000/airport/' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
+           const name = document.querySelector('#user-name').value;
+          document.getElementById('welcome').innerText = `Hi ${name}, let's start your journey!`;
+          const response = await fetch('http://127.0.0.1:5100/gamerinfo?name=' +name + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
           const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
           const pos = [jsonData.Lat, jsonData.Long];                                  // create position array for leaflet library
-          console.log(jsonData.ICAO, jsonData.Name, jsonData.Lat, jsonData.Long);     // log the result to the console
+          console.log(jsonData);     // log the result to the console
 
           // Show the airport name to the screen
           currentAirport = jsonData.Name;
@@ -170,7 +175,7 @@ function airport_start(evt) {
     console.log('asynchronous download begins');
     try {                                               // error handling: try/catch/finally
       console.log(city.value);
-      const response = await fetch('http://127.0.0.1:3000/' + city.value);    // starting data download, fetch returns a promise which contains an object of type 'response'
+      const response = await fetch('http://127.0.0.1:5100/' + city.value);    // starting data download, fetch returns a promise which contains an object of type 'response'
       const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
       console.log(jsonData[0]['Airport name']);
 
