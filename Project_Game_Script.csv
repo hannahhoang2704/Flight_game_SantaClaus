@@ -178,12 +178,12 @@ delete from airport where type ="seaplane_base";
 alter table game
 drop column gifts;
 
-alter table
+alter table game
 add gifts varchar(255) DEFAULT 1000;
 
-alter table
+alter table game
 drop column co2_consumed;
 
-alter table
+alter table game
 add co2_consumed varchar(255) DEFAULT 0;
 
