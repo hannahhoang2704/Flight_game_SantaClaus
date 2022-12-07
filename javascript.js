@@ -2,8 +2,7 @@
 
 //start game page_ index.html
 
-const playerNameButton = document.getElementById('name-button');
-const playerName = document.querySelector('#username-form');        //username's form
+//const playerName = document.querySelector('#username-form');        //username's form
 const search = document.getElementById('start');                //button to fetch all the airports in chosen city
 const city = document.getElementById('city');                   //input of city
 const div_ICAO = document.getElementById('ICAO-fetch')          //div contain all the ICAO element
@@ -11,7 +10,7 @@ const ICAO_p = document.createElement('p');                     //Message to pla
 let departureAirport;                   //departure airport name
 let icao_start;                       //ICAO of the depature airport
 const icao_rovaniemi = 'EFRO';               //ICAO of Rovaniemi
-let currentAirport;
+let currentAirport =" ";
 
 
 
@@ -47,34 +46,23 @@ async function player_name(){
       console.log(error);
     }
   }
-//retrieve player's name in database
-/*function get_player_name(evt){
-  evt.preventDefault();
-  const name = document.querySelector('#user-name').value;
-  document.getElementById('welcome').innerText = `Hi ${name}, let's start your journey!`;
-  player_name();
-}
-playerName.addEventListener('submit', get_player_name);*/
-
-
-//Greeting to player
-/*playerNameButton.addEventListener('click', ()=>{
-  document.getElementById('welcome').innerText = `Hi ${playerName.value}, let's start your journey!`;
-})*/
 
 //fetch the airport info(ICAO, name, long, lat) where you want to flight to
 async function getAirportPosition(icao){
   try {
-           const name = document.querySelector('#user-name').value;
-          document.getElementById('welcome').innerText = `Hi ${name}, let's start your journey!`;
-          const response = await fetch('http://127.0.0.1:5100/gamerinfo?name=' +name + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
-          const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
-          const pos = [jsonData.Lat, jsonData.Long];                                  // create position array for leaflet library
-          console.log(jsonData);     // log the result to the console
 
+          const userName = document.querySelector('#user-name').value;
+          document.getElementById('welcome').innerText = `Hi ${userName}, let's start your journey!`;
+          const response = await fetch('http://127.0.0.1:5100/gamerinfo?name=' +userName + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
+          const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+          const pos = [jsonData.airport.Lat, jsonData.airport.Long];                                  // create position array for leaflet library
+          console.log(jsonData);     // log the result to the console
+          console.log(jsonData.airport.Name, jsonData.airport.Lat, jsonData.airport.Long )
           // Show the airport name to the screen
-          currentAirport = jsonData.Name;
-          console.log('current airport:' + currentAirport)
+          currentAirport = jsonData.airport.Name;
+          console.log('current airport:' + currentAirport);
+          const airportUpdateName = document.getElementById('airport-name');
+          airportUpdateName.innerHTML = `<span>${currentAirport}</span>`;
           // and draw the map
           drawMapWithMarker(pos, icao)
 
