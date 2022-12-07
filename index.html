@@ -8,12 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;1,600;1,700&display=swap"
           rel="stylesheet">
-    
-    <!--leaflet map-->
-    
     <link href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
-    
     <!--CSS stylesheet-->
     <link rel="stylesheet" href="stylesheet.css">
 </head>
@@ -39,11 +35,11 @@
     </div>
 </div>
 <div class="nav-container">
-    <header class="logo"><img src="image/random-image/beard_dark.png" alt="Logo" width=300px></header>
+    <header class="logo"><img src="image/logo/moustache2_clear.png" alt="Logo" width=300px></header>
 
     <nav class="nav-bar">
         <ul>
-            <li class="nav-bar-button"><a class="nav-btn nav-link-ltr" href="Game.html">Start Game</a></li>
+            <li class="nav-bar-button"><a class="nav-btn nav-link-ltr" href="game_index.html">Start Game</a></li>
             <li class="nav-bar-button"><a class="nav-btn nav-link-ltr" href="Exit.html">Exit</a></li>
         </ul>
     </nav>
@@ -61,30 +57,14 @@
                 challenge you to play a game with them. If you win you get to collect some gifts if you lose your new
                 passengers get your gifts. Some would call it robbery; we call it fair play. The winner of this game is
                 whoever collects the most gifts!</p>
-
-
-            <form id="username-form" action="http://127.0.0.1:3000/" method="post">  <!-- -->
-                <label for="user-name">Your name:</label>
-                <input id="user-name" type="text" name="name" placeholder="Your name">
-                <input id="name-button" type="submit" value="Go!">
-                <p id="welcome"></p>
-            </form>
-                <p>Where do you want to fly from:</p>
-                <input id="city" type="text" name="municipality" placeholder="City" required>
-                <input id="start" type="submit" value="Search">
-
-            <div id="ICAO-fetch">
-            <!--<p>Choose ICAO:</p>
-            <select name="" id="airport-fetch"></select>-->
-            </div>
-
         </div>
 
     </div>
 
 </main>
 
-    
+
+
 <!--Javascript link-->
 <script src="javascript.js" defer></script>
 </body>
