@@ -98,12 +98,6 @@ header {
     padding: 15rem 2rem 4rem;
     display: flex;
     flex-wrap: wrap;
-    /*grid-template-columns: 1fr 1fr 1fr;
-    position: relative;
-    grid-template-areas:
-                "picture story story"
-                "picture story story"
-                ;*/
 }
 
 .figure {
@@ -148,15 +142,21 @@ header {
 
 .flex-wrap {
     flex-wrap: wrap;
+    padding-top: 10rem;
     display: grid;
     padding: 10rem 2rem;
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
+            "user-input user-input"
             "maps score"
             "maps main-game"
             "weather main-game";
     column-gap: 2%;
     row-gap: 2%;
+}
+#user-info{
+   
+    grid-area: user-input;
 }
 
 .space-evenly {
@@ -164,31 +164,23 @@ header {
 }
 
 
-.score-board {
-    background-color: darkorange;
-    grid-area: score;
-}
-
-.main-game {
-    background-color: darkseagreen;
-    grid-area: main-game;
-}
-
 #map {
     width: 100%;
     height: 40vh;
     overflow: hidden;
+    grid-area: maps;
+    
+}
+#game-status{
+    grid-area: score;
+ 
 }
 
-
-.boxes {
-    width: 90%;
-}
 
 .box {
     padding: 1rem;
     font-size: 9px;
-    background-color: darkorange;
+   
 
 }
 
@@ -223,7 +215,6 @@ header {
 }
 
 
-
 /*Exit page*/
 
 .exit-page {
@@ -239,8 +230,6 @@ header {
 
 .snowflake {
     color: #fff;
-
-
     font-size: 1em;
     font-family: Arial;
     text-shadow: 0 0 1px #000;
