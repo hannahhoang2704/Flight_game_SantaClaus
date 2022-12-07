@@ -39,7 +39,7 @@ function drawMapWithMarker(pos, icao) {
 //player's name
 async function player_name(){
     try{
-      const gameData = await fetch('http://127.0.0.1:5100/gamerinfo?player=' + name)
+      const gameData = await fetch('http://127.0.0.1:5200/gamerinfo?player=' + name)
       const jsonName = await gameData.json();
       console.log(jsonName)
     }catch(error){
@@ -53,16 +53,29 @@ async function getAirportPosition(icao){
 
           const userName = document.querySelector('#user-name').value;
           document.getElementById('welcome').innerText = `Hi ${userName}, let's start your journey!`;
-          const response = await fetch('http://127.0.0.1:5100/gamerinfo?name=' +userName + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
+          const response = await fetch('http://127.0.0.1:5200/gamerinfo?name=' +userName + '&location=' + icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
           const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
           const pos = [jsonData.airport.Lat, jsonData.airport.Long];                                  // create position array for leaflet library
           console.log(jsonData);     // log the result to the console
           console.log(jsonData.airport.Name, jsonData.airport.Lat, jsonData.airport.Long )
           // Show the airport name to the screen
+    
+    
           currentAirport = jsonData.airport.Name;
           console.log('current airport:' + currentAirport);
           const airportUpdateName = document.getElementById('airport-name');
           airportUpdateName.innerHTML = `<span>${currentAirport}</span>`;
+          const name = jsonData.screen_name;
+          const nameUpdate = document.getElementById('player-name');
+          nameUpdate.innerText = `PLayer name: ${name}`;
+          const gifts = jsonData.gifts;
+          const giftsUpdate = document.getElementById('gifts');
+          giftsUpdate.innerText = gifts
+          const currentco2 = jsonData.co2_consumed;
+          const currentco2Update = document.getElementById('consumed');
+          currentco2Update.innerText = currentco2
+          
+    
           // and draw the map
           drawMapWithMarker(pos, icao)
 
@@ -163,7 +176,7 @@ function airport_start(evt) {
     console.log('asynchronous download begins');
     try {                                               // error handling: try/catch/finally
       console.log(city.value);
-      const response = await fetch('http://127.0.0.1:5100/' + city.value);    // starting data download, fetch returns a promise which contains an object of type 'response'
+      const response = await fetch('http://127.0.0.1:5200/' + city.value);    // starting data download, fetch returns a promise which contains an object of type 'response'
       const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
       console.log(jsonData[0]['Airport name']);
 
@@ -181,4 +194,3 @@ function airport_start(evt) {
 
 //call-back function to fetch all airport in chosen city
 search.addEventListener('click', fetch_airport);
-
