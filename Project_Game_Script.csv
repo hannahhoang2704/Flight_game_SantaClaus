@@ -175,5 +175,9 @@ delete from airport where type ="closed";
 delete from airport where type ="heliport";
 delete from airport where type ="seaplane_base";
 
+alter table game
+drop column gifts;
 
+alter table
+add gifts varchar(255) DEFAULT 1000;
 
