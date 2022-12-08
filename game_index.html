@@ -13,7 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js"></script>
 
     <!--CSS stylesheet-->
-    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="snowflakes" aria-hidden="true">
@@ -62,8 +62,8 @@
         <!---<div class="maps">Maps</div>--->
         <div id="map" style="width: 100%; height: 450px;"></div>
 
-        <div id="game-status" class="boxes">
-            <section class="box">
+        <!--<div id="game-status" class="boxes">-->
+            <section id="status" class="box">
                 <header>
                     <h2>Game Status</h2>
                 </header>
@@ -74,14 +74,16 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Gifts collected <span id="gifts">0</span> gifts</td>
+                        <td>Gifts collected: <span id="gifts">0</span> gifts</td>
                         <td>CO2 Consumed: <span id="consumed">1000</span> kg</td>
                     </tr>
                 </table>
             </section>
+            <div id="main-program"></div>
             <section id="weather-section" class="box">
                 <header>
-                    <h2 id="airport-name">Airport Name</h2>
+                    <h2 id="airport-name">Airport Name: </h2>
+                    <!--<h2 id="destination">Destination: </h2>-->
                 </header>
                 <table id="weather">
                     <tr>
@@ -100,7 +102,7 @@
                 </table>
             </section>
 
-        </div>
+        <!--</div>-->
     </main>
 
 <!--Javascript link-->
