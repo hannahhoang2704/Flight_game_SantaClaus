@@ -11,54 +11,6 @@ from questions_func import questions_answers            #quiz function
 from rock_paper_scissor import rock_paper_scissors      #rock-paper-scissors function
 
 
-class Player:
-    def __init__(self, name, gift=100, co2_consumption=0):
-        self.name = name
-        self.gift = gift
-        self.co2_consumption = co2_consumption
-
-    def get_info(self):
-        return print(f"Name: {self.name}\n{self.gift} gifts\nCo2_consumption: {self.co2_consumption}")
-
-    def get_gift(self):
-        nr_random = random.randint(1, 5)
-        sql = "SELECT treasure_name, score from score_change"
-        sql += " WHERE id=" + str(nr_random)
-        cursor = connection.cursor()
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        if cursor.rowcount > 0:
-            for row in result:
-                row[0]
-                giftplus = int(row[1])
-                print(f"You got {row[0]}, and earn {row[1]} gifts")
-        self.gift += giftplus
-        return self.gift
-
-    def deduct_gift(self):
-        nr_random = random.randint(6, 8)
-        sql = "SELECT treasure_name, score from score_change"
-        sql += " WHERE id=" + str(nr_random)
-        cursor = connection.cursor()
-        cursor.execute(sql)
-        result = cursor.fetchall()
-        if cursor.rowcount > 0:
-            for row in result:
-                row[0]
-                giftminus = int(row[1])
-                print(f"You got {row[0]}, and lost {row[1]} gifts")
-        self.gift += giftminus
-        return self.gift
-
-    def co2_add(self, amount):
-        self.co2_consumption += amount
-        return self.co2_consumption
-
-
-def fly(name = None, gift =100, consumption = 0):
-    player1 = Player(name, gift, consumption)
-    json_data = json.dumps(player1, indent = 4)
-    return json_data
 
 connection = mysql.connector.connect(
     host='127.0.0.1',
@@ -74,6 +26,67 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+def questions_answers():
+
+    # Questionaires and answers
+    questions = (
+        "Wasting less food is a way to reduce greenhouse gas emissions.",  # 0
+        "The overwhelming majority of scientists agree that climate change is real and caused by humans.",
+        # 1
+        "Combustion removes carbon from the atmosphere",  # 2
+        "Unplugging your electronics when you’re not using them could shave as much as 10 percent off your energy"
+        "bill.",  # 3
+        "Climate change is heating the world evenly.",  # 4
+        "Climate change and extreme weather are linked.",  # 5
+        "As climate warms, we will no longer have snow storms and cold days.",  # 6
+        "We definitely know that tornadoes are increasing in frequency because of climate change.",
+        # 7
+        "All climate scientists in the 1970s were saying that we were going into an Ice Age or cooler Earth.",
+        # 8
+        "Growing leafy green plants is the most effective method for permanently storing carbon dioxide.",
+        # 9
+        "Scientists have reached common agreement and have adopted consensus-driven global policies that monitor"
+        "effective, safe, reliable long-term storage of carbon dioxide.",  # 10
+        "The atmosphere is composed mainly of nitrogen and oxygen.",  # 11
+        "Climate change is the same thing as global warming",  # 12
+        "The Earth's climate has changed before",  # 13
+        "Climate change can harm plants and animals",  # 14
+        "The sun causes global warming")  # 15
+    answers = ("true",  # 0
+               "true",  # 1,
+               "false",  # 2
+               "true",  # 3
+               "false",  # 4
+               "true",  # 5
+               "false",  # 6
+               "false",  # 7
+               "false",  # 8
+               "false",  # 9
+               "false",  # 10
+               "true",  # 11
+               "false",  # 12
+               "true",  # 13
+               "true",  # 14
+               "false")  # 15
+
+
+    questions = list(questions)
+    answers = list(answers)
+    random_index_number = random.randint(0, len(questions) - 1)
+    random_ques = questions[random_index_number]
+    right_answer = answers[random_index_number]
+    return random_ques, right_answer
+
+@app.route('/quiz')
+def quiz_game():
+    question, answer = questions_answers()
+    response = {
+        'question': question,
+        'answer': answer
+    }
+    print(question, answer)
+    return response
+
 
 #gamer input departure airport and name
 @app.route('/gamerinfo')
@@ -81,15 +94,15 @@ def gamerinfo():
     args = request.args
     name = args.get('name')
     location = args.get('location')
-    print(name, location)
+    #print(name, location)
     sql = "INSERT into game (screen_name, location) "
     sql += "VALUES ('" + name + "','" + location + "')"
-    print(sql)
+    #print(sql)
     cursor = connection.cursor(dictionary=True)
     cursor.execute(sql)
     sql2 = "SELECT * from game "
     sql2 += "WHERE id=" + str(cursor.lastrowid) +";"
-    print(sql2)
+    #print(sql2)
     cursor.execute(sql2)
     result = cursor.fetchone()
     ap = airport(location)
@@ -157,10 +170,10 @@ def weather():
     args = request.args
     latitude = args.get('lat')
     longitude = args.get('long')
-    print(longitude, latitude)
+    #print(longitude, latitude)
     request_link = "https://api.openweathermap.org/data/2.5/weather?lat=" + latitude + "&lon=" + longitude + "&units=metric&appid=aa8e935a3667b6a53c9bf49d4ba2904a"
     response = requests.get(request_link).json()
-    print(json.dumps(response, indent=2))
+    #print(json.dumps(response, indent=2))
     description = response["weather"][0]["description"]
     temp = response["main"]["temp"]
     wind = response['wind']['speed']
@@ -180,13 +193,16 @@ def calculate_distance_between_airports():
     args = request.args
     start_airport = fetch_airport_names_by_icao_code(args.get("start"))
     end_airport = fetch_airport_names_by_icao_code(args.get("end"))
-
+    print(start_airport)
+    print(end_airport)
     d = distance.distance((start_airport[2], start_airport[3]), (end_airport[2], end_airport[3])).km
-    return {
+    print(d)
+    response = {
         "start": (start_airport[2], start_airport[3]),
         "end": (end_airport[2], end_airport[3]),
         "dist": d
     }
+    return response
 
 if __name__ == '__main__':
     app.run(use_reloader=True, host='127.0.0.1', port=5100)
