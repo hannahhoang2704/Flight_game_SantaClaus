@@ -26,6 +26,7 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
+
 def questions_answers():
 
     # Questionaires and answers
