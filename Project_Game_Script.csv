@@ -187,3 +187,9 @@ drop column co2_consumed;
 alter table game
 add co2_consumed varchar(255) DEFAULT 0;
 
+
+#### to delete rows in game table:
+#set foreign_key_checks = 0;
+#delete from game where id between 4 and 8;
+#set foreign_key_checks = 1;
+
