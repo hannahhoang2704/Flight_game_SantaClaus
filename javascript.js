@@ -108,6 +108,7 @@ async function getAirportPosition(icao){
           //console.log(jsonDataWeather)               // JsonDataweather objects
           updateWeather(jsonDataWeather.temperature, jsonDataWeather.description,jsonDataWeather.wind, jsonDataWeather.icon)      //update weather
 
+          return jsonDataWeather
       } catch (error) {
           console.log(error.message);
       } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
@@ -122,10 +123,10 @@ async function getAirportDistance(icao_start, icao_end) {
     try {
         const response = await fetch('http://127.0.0.1:5100/airportdistance?start=' + icao_start + '&end=' + icao_end);    // starting data download, fetch returns a promise which contains an object of type 'response'
         jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
-
-        drawMapWithLine(jsonData.start, jsonData.end)
         console.log(jsonData)
-        //console.log(jsonData.dist);     // log the result to the console
+        //drawMapWithLine(jsonData.start, jsonData.end)
+        console.log(jsonData.dist);     // log the result to the console
+        return jsonData
     } catch (error) {
         console.log(error.message);
     } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
@@ -134,14 +135,7 @@ async function getAirportDistance(icao_start, icao_end) {
     }
 }
 
-//print in console the distance between departure airport to rovaniemi airport
-  function airport_route_distance() {
-    getAirportDistance(icao_start, icao_rovaniemi).then(function(distance) {
-      console.log('Distance = ' + distance + 'km')
-    })
-  }
 
-/*
 
   //Fetch the quiz game
 async function fetch_question_quiz(){
@@ -158,7 +152,7 @@ async function fetch_question_quiz(){
       //console.log("log get airport distance")
     }
   }
-
+/*
 
 function mainProgram() {
   const quizDiv = document.createElement('div');
@@ -169,14 +163,18 @@ function mainProgram() {
 
 
 //Check how far from departure airport to Rovaniemi
-function airport_start(evt) {
+async function airport_start(evt) {
   evt.preventDefault();
   const selectOption = document.getElementById('airport-fetch');          //get the ICAO number of the chosen airport
   icao_start = selectOption.options[selectOption.selectedIndex].value;
   //console.log(icao_start);
 
-  getAirportPosition(icao_start);                                                  //fetch the departure airport info
-/*
+  //const weatherP = await getAirportPosition(icao_start);                                                  //fetch the departure airport info
+  //const distanceP = weatherP && await getAirportDistance(icao_start, icao_rovaniemi);
+  getAirportDistance(icao_start, icao_rovaniemi);
+
+  //const gameStart = distanceP &&
+ /*
   airport_route_distance();                                           //check distance between departure airport to Rovaniemi airport
 
   let start_btn = document.createElement('button');
