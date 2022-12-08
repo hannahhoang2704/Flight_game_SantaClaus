@@ -138,6 +138,12 @@ function airport_start(evt) {
   const selectOption = document.getElementById('airport-fetch');          //get the ICAO number of the chosen airport
   icao_start = selectOption.options[selectOption.selectedIndex].value;
   //console.log(icao_start);
+  let start_btn = document.createElement('button');  // Start button
+  start_btn.innerText = 'Start';
+  start_btn.addEventListener('click',function(){
+    alert('Hello');
+  })
+  document.getElementById('main-program').appendChild(start_btn)
 
   getAirportPosition(icao_start);                                                  //fetch the departure airport info
   //getAirportPosition(icao_rovaniemi);                                               //fetch the info of Rovaniemi airport
