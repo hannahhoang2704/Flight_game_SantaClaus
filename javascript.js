@@ -7,6 +7,11 @@ const city = document.getElementById('city');                   //input of city
 const div_ICAO = document.getElementById('ICAO-fetch')          //div contain all the ICAO element
 const ICAO_p = document.createElement('p');                     //Message to player after choose the city
 
+//game status update
+const nameUpdate = document.getElementById('player-name');
+const giftsUpdate = document.getElementById('gifts');
+const currentco2Update = document.getElementById('consumed');
+
 
 //airport weather
 const temperature = document.getElementById('airport-temp');
@@ -44,6 +49,12 @@ function drawMapWithMarker(pos, icao) {
   L.marker(pos).addTo(map).bindPopup(icao).openPopup();
 }
 
+// function to update the game status
+function updateGameStatus(screen_name,gifts,currentco2) {
+  nameUpdate.innerText = `PLayer name: ${screen_name}`;
+  giftsUpdate.innerText = gifts
+  currentco2Update.innerText = currentco2
+}
 
 //function to update the weather in HTML
 function updateWeather(temp, condition, wind, icon){
@@ -80,17 +91,11 @@ async function getAirportPosition(icao){
           const airportUpdateName = document.getElementById('airport-name');
           airportUpdateName.innerHTML = `<span>${currentAirport}</span>`;
 
-          //update player name,gifts and co2 consumption
-
-          const name = jsonData.screen_name;
-          const nameUpdate = document.getElementById('player-name');
-          nameUpdate.innerText = `PLayer name: ${name}`;
+          //update player name,gifts and current co2
+          const screen_name = jsonData.screen_name;
           const gifts = jsonData.gifts;
-          const giftsUpdate = document.getElementById('gifts');
-          giftsUpdate.innerText = gifts
           const currentco2 = jsonData.co2_consumed;
-          const currentco2Update = document.getElementById('consumed');
-          currentco2Update.innerText = currentco2
+          updateGameStatus(screen_name,gifts,currentco2)
 
           // and draw the map
           drawMapWithMarker(pos, icao)
@@ -204,4 +209,3 @@ function airport_start(evt) {
 
 //call-back function to fetch all airport in chosen city
 search.addEventListener('click', fetch_airport);
-
