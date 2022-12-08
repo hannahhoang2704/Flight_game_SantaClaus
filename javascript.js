@@ -51,7 +51,7 @@ function drawMapWithMarker(pos, icao) {
 
 // function to update the game status
 function updateGameStatus(screen_name,gifts,currentco2) {
-  nameUpdate.innerText = `PLayer name: ${screen_name}`;
+  nameUpdate.innerText = `Player name: ${screen_name}`;
   giftsUpdate.innerText = gifts
   currentco2Update.innerText = currentco2
 }
