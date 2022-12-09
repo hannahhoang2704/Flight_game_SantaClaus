@@ -37,7 +37,7 @@
     </div>
 </div>
 <div class="nav-container nav-area">
-        <header class="logo"><img src="image/random-image/santa_logo.png" alt="Logo" width=300px></header>
+        <header class="logo"><img src="image/logo/moustache2_clear.png" alt="Logo" width=300px></header>
 
         <nav class="nav-bar">
             <ul>
@@ -50,13 +50,14 @@
         <div id="user-info">
             <form id="username-form">  <!-- -->
                     <label for="user-name">Your name:</label>
-                    <input id="user-name" type="text" name="name" placeholder="Your name">
+                    <input id="user-name" type="text" name="name" placeholder="Your name" class="input-class" required>
                     <p id="welcome"></p>
-            </form>
+
                     <p>Where do you want to fly from:</p>
-                    <input id="city" type="text" name="municipality" placeholder="City" required>
-                    <input id="start" type="submit" value="Search">
+                    <input id="city" type="text" name="municipality" placeholder="City" class="input-class" required>
+                    <input id="start" type="submit" value="Search" class="game-btn">
                     <div id="ICAO-fetch"></div>
+            </form>
         </div>
 
         <!---<div class="maps">Maps</div>--->
@@ -65,7 +66,7 @@
         <!--<div id="game-status" class="boxes">-->
             <section id="status" class="box">
                 <header>
-                    <h2>Game Status</h2>
+                    <h1>Game Status</h1>
                 </header>
                 <table>
                     <tr>
@@ -74,15 +75,19 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Gifts collected: <span id="gifts">0</span> gifts</td>
-                        <td>CO2 Consumed: <span id="consumed">1000</span> kg</td>
+                        <td>Gifts collected: <br><span id="gifts">0</span>  gifts</td>
+                        <td>CO2 Consumed*: <br><span id="consumed">0</span> kg</td>
+                        <td>Distance to Rovaniemi: <br><span id="distance-to-rovaniemi">0</span> km</td>
                     </tr>
                 </table>
             </section>
-            <div id="main-program"></div>
+            <div id="main-program">
+                <p id="question"></p>
+                <div id="answer-selection"></div>
+            </div>
             <section id="weather-section" class="box">
                 <header>
-                    <h2 id="airport-name">Airport Name: </h2>
+                    <h1 id="airport-name">Airport Name: </h1>
                     <!--<h2 id="destination">Destination: </h2>-->
                 </header>
                 <table id="weather">
@@ -104,7 +109,10 @@
 
         <!--</div>-->
     </main>
-
+<footer>
+    <p>*Amount of C02 consumption is estimated based on Boeing 747SR.</p>
+    <p>© 2022 Hanh Hoang Phan Duc, Arijana Määttä, Adrian Garcia Castro. </p>
+</footer>
 <!--Javascript link-->
 <script src="javascript.js" defer></script>
 
