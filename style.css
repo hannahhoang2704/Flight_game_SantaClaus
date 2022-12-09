@@ -1,9 +1,9 @@
 :root {
-    --dark-blue: #184d5a;
-    --blue:#3D6F80CC;
-    --white: #03191a;
-    --light-blue: #b6ced6;
-    --red: rgba(255, 0, 0, 0.56);
+    --mint: #b1cbbb;
+    --orange:#c94c4c;
+    --burgundy: #8d1414;
+    --light-blue: #deeaee;
+    --red: #8d1414;
     --shadow: rgba(0, 0, 0, 0.3)
 }
 
@@ -13,13 +13,13 @@
 }
 
 html {
-     background-color: var(--white);
+     background-color: var(--light-blue);
 }
 
 body {
     width: 80%;
-    background-color: var(--light-blue);
-    color: var(--white);
+    background-color: var(--mint);
+    color: var(--burgundy);
     font-family: 'Lora', serif;
     font-weight: 400;
     margin: auto;
@@ -30,7 +30,7 @@ body {
 .nav-container {
     /*position: fixed;
     width: 80%;*/
-    background-color: var(--blue);
+    background-color: var(--orange);
     display: flex;
     flex-wrap: wrap;
 }
@@ -70,7 +70,7 @@ body {
 .nav-btn {
     text-decoration: none;
     font-weight: 700;
-    color: var(--dark-blue);
+    color: var(--light-blue);
     position: relative;
     margin: 0 2rem;
     font-size: 1.2rem;
@@ -94,7 +94,7 @@ body {
 }
 
 .nav-btn:hover {
-    color: var(--white);
+    color: var(--burgundy);
 }
 
 .instructions {
@@ -110,7 +110,6 @@ body {
 .stick-man {
     max-width: 50%;
     margin: 3rem;
-
 }
 
 .story-line {
@@ -139,6 +138,7 @@ body {
 
 .space-evenly {
     justify-content: space-evenly;
+    
 }
 
 #user-info{
@@ -147,7 +147,8 @@ body {
 
 #main-program{
     grid-area: main-game;
-    background-color: cornflowerblue;
+
+    padding:0.5rem;
 }
 #map {
     width: 100%;
@@ -157,29 +158,33 @@ body {
 }
 #status{
     grid-area: score;
+    font-size: 1.1rem;
 
 }
 #weather-section{
     grid-area: weather;
+    font-size: 1.1rem;
 }
 .box {
-    padding: 1rem;
+    padding: 0.3rem;
     font-size: 9px;
 }
 
-#map, .box {
+.box {
     border-radius: 6px;
-    box-shadow: var(--shadow) 3px 3px 10px;
+    box-shadow: var(--shadow) 3px 3px 10px;                 /*Shadow for the box*/
     margin-bottom: 1rem;
+
 }
 .box h2, .box figure {
-    margin: 0;
+    margin: auto;
     padding: 0;
+
 }
 .box table {
     width: 100%;
     text-align: center;
-    border: var(--dark-blue) solid 1px;
+    border: var(--light-blue) solid 1px;
     border-radius: 4px;
 }
 #weather {
@@ -190,23 +195,36 @@ body {
     padding: 0.3rem;
 }
 #weather td:first-child, #weather td:nth-child(2) {
-    border-right: var(--dark-blue) 1px solid;
+    border-right: var(--light-blue) 1px solid;
 }
 
 
 
+/*element inside the game*/
 
-
-
-
-
-
-
-
+#question, #answer-selection{
+    padding: 1.5rem;
+}
+.game-btn {
+    background-color: var(--orange);
+    color: var(--light-blue);
+    box-shadow: none;
+    border: none;
+    padding: 0.3rem;
+    border-radius: 0.4rem;
+    margin-left: 1.5rem;
+}
+.game-btn:hover{
+   background-color: var(--burgundy);
+}
+.input-class{
+    padding: 0.3rem;
+    border-radius: 0.3rem;
+}
 /*Exit page*/
 
 .exit-page {
-    padding-top: 10rem;
+    padding: 10rem;
     text-align: center;
 }
 
@@ -223,6 +241,7 @@ body {
     text-shadow: 0 0 1px #000;
 }
 
+.
 @-webkit-keyframes snowflakes-fall {
     0% {
         top: -10%
