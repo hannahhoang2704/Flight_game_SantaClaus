@@ -25,14 +25,40 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-rovaniemi_deg = [122.3, 9.1]
+
+rovaniemi_deg = [66.565, 25.83]
+departure_ICAO = ""
+
+
+def pick_airport(x1, x, y1, y):
+    list_of_airport = []
+    list_of_deg = []
+    sql = "SELECT name, latitude_deg, longitude_deg FROM airport"
+    sql += " WHERE latitude_deg between " + str(x1) + " and " + str(x) + \
+           " and longitude_deg between " + str(y1) + " and " + str(y)
+    # print(sql)
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    if cursor.rowcount > 0:
+        for row in result:
+            list_of_airport.append(row[0])
+            list_of_deg.append([row[1], row[2]])
+            #print(row)
+            # print(list_of_airport)
+    random_nr = random.randint(0, len(list_of_airport) - 1)
+    while distance.distance(list_of_deg[random_nr], rovaniemi_deg).km > new_transit.calc_distance_to_Rov() or distance.distance(list_of_deg[random_nr], rovaniemi_deg).km == 0 or distance.distance(list_of_deg[random_nr], rovaniemi_deg).km == new_transit.calc_distance_to_Rov():
+        random_nr = random.randint(0, len(list_of_airport) - 1)
+
+    return list_of_airport[random_nr], list_of_deg[random_nr]  # random airport to transit within the range
+
 
 """
+
 def get5Airport(currentlocation):
     airports_list =[currentlocation]
     degree_list = []
-    pick_airport
-    visited_airport
+    visited_airport =[]
     for i in range(5):
         deg_lat = currentlocation[0]
          # Latitude and longitude degree of departure airport
@@ -139,6 +165,7 @@ def questions_answers():
     right_answer = answers[random_index_number]
     return random_ques, right_answer
 
+
 @app.route('/quiz')
 def quiz_game():
     question, answer = questions_answers()
@@ -149,6 +176,46 @@ def quiz_game():
     print(question, answer)
     return response
 
+#change point of the game
+
+def get_gift():
+    nr_random = random.randint(1, 5)
+    sql = "SELECT treasure_name, score from score_change"
+    sql += " WHERE id=" + str(nr_random)
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    if cursor.rowcount > 0:
+        for row in result:
+            row[0]
+            giftplus = int(row[1])
+            print(f"You got {row[0]}, and earn {row[1]} gifts")
+    return giftplus
+
+def deduct_gift():
+    nr_random = random.randint(6, 8)
+    sql = "SELECT treasure_name, score from score_change"
+    sql += " WHERE id=" + str(nr_random)
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    if cursor.rowcount > 0:
+        for row in result:
+            row[0]
+            giftminus = int(row[1])
+            print(f"You got {row[0]}, and lost {row[1]} gifts")
+    return giftminus
+
+
+#make change in gifts
+@app.route('/giftschange/<change>')
+def change_in_gift(change):
+    if change == 'add':
+        gifts_change = str(get_gift())
+    if change == 'deduct':
+        gifts_change = str(deduct_gift())
+    return gifts_change
+
 
 #gamer input departure airport and name
 @app.route('/gamerinfo')
@@ -156,6 +223,8 @@ def gamerinfo():
     args = request.args
     name = args.get('name')
     location = args.get('location')
+    departure_ICAO = location
+    print(departure_ICAO)
     #print(name, location)
     sql = "INSERT into game (screen_name, location) "
     sql += "VALUES ('" + name + "','" + location + "')"
@@ -192,6 +261,7 @@ def municipality_search(city):
         return airport_list
     #print(icao_suggested_list)
     return airport_list
+
 
 #Fetch all airports in chosen city
 @app.route('/<city>')
@@ -265,6 +335,20 @@ def calculate_distance_between_airports():
         "dist": d
     }
     return response
+
+#API to calculate C02 consumption
+
+@app.route('/co2consumed/<d>')
+def api_co2(d):
+    dist = float(d)
+    convert = dist * 1.852
+    f = "https://despouy.ca/flight-fuel-api/q/?aircraft=60006b&distance=" + str(convert)
+    response = requests.get(f).json()
+    print(response)
+    amount = str(response[0]['co2'])
+    print(amount)
+    return amount
+
 
 if __name__ == '__main__':
     app.run(use_reloader=True, host='127.0.0.1', port=5100)
