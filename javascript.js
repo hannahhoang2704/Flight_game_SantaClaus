@@ -21,13 +21,21 @@ const weatherIcon = document.getElementById('weather-icon');
 
 let icao_start;                       //ICAO of the depature airport
 const icao_rovaniemi = 'EFRO';               //ICAO of Rovaniemi
+let distanceTotal;
 let currentAirport = ' ';
 let currentAirport_long;
 let currentAirport_lat;
+let gifts;
 
 //main-game
 const questionUpdate = document.getElementById('question');
+const mainGameDiv = document.getElementById('main-program');
+const answerSelection = document.getElementById('answer-selection');
+let correctAnswer;
 
+
+//update gifts
+//giftsUpdate.innerText = gifts;
 //Add maps
 
 let map;
@@ -59,13 +67,12 @@ function updateWeather(temp, condition, wind, icon) {
   temperature.innerHTML = `<span>${temp}°C</span>`;
   weatherCondition.innerHTML = `<span>${condition}</span>`;
   windSpeed.innerHTML = `<span>${wind} m/s</span>`;
-  weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) +
-      '@2x.png';
+  weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) + '@2x.png';
 }
 
 //change the quiz in main program div
 function quiz(question_screen) {
-  questionUpdate.innerText = `Question: ${question_screen}`;
+  questionUpdate.innerHTML = `Answer the question below: <br> ${question_screen}`;
 
 }
 
@@ -97,8 +104,9 @@ async function getAirportPosition(icao) {
 
     //update player name,gifts and co2 consumption
     const screen_name = jsonData.screen_name;
-    const gifts = jsonData.gifts;
-    const currentco2 = jsonData.co2_consumed;
+    gifts = jsonData.gifts;
+    console.log(gifts)
+    let currentco2 = jsonData.co2_consumed;
     updateGameStatus(screen_name, gifts, currentco2);
 
     // and draw the map
@@ -120,73 +128,127 @@ async function getAirportPosition(icao) {
     console.log('asynchronous load complete');
   }
 }
+async function co2Consumed(distance){
+      const response = await fetch(
+        'http://127.0.0.1:5100/co2consumed/'+ distance);    // starting data download, fetch returns a promise which contains an object of type 'response'
+      const jsonData = await response.json();
+      console.log(jsonData)
+      currentco2Update.innerText = jsonData;
+      return jsonData
+    }
 
 //get distance between 2 airport
 async function getAirportDistance(icao_start, icao_end) {
-  let jsonData;
   try {
     const response = await fetch(
-        'http://127.0.0.1:5100/airportdistance?start=' + icao_start + '&end=' +
-        icao_end);    // starting data download, fetch returns a promise which contains an object of type 'response'
-    jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+        'http://127.0.0.1:5100/airportdistance?start=' + icao_start + '&end=' + icao_end);    // starting data download, fetch returns a promise which contains an object of type 'response'
+    const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(jsonData);
     //drawMapWithLine(jsonData.start, jsonData.end)
-    console.log(jsonData.dist);     // log the result to the console
+    distanceTotal = jsonData.dist;     // log the result to the console
     distanceToRov.innerHTML = `${jsonData.dist}`;
     return jsonData;
   } catch (error) {
     console.log(error.message);
-  } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
-    //return jsonData.dist;
-    console.log('log get airport distance');
   }
+
 }
 
 //Fetch the quiz game
 async function fetch_question_quiz() {
   try {
-    const response = await fetch('http://127.0.0.1:5100/quiz');    // starting data download, fetch returns a promise which contains an object of type 'response'
-    const quizData = await response.json();          // retrieving the data retrieved from the response object using the json() function
-    console.log(quizData);
-    console.log(quizData.question);     // log the result to the console
-    const question_screen = quizData.question;
-    quiz(question_screen);
-    return quizData.question;
+      const response = await fetch('http://127.0.0.1:5100/quiz');    // starting data download, fetch returns a promise which contains an object of type 'response'
+      const quizData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+      console.log(quizData);
+      console.log(quizData.question);     // log the result to the console
+      const question_screen = quizData.question;
+      correctAnswer = quizData.answer;
+      answerSelection.innerHTML ="";
+      quiz(question_screen);
+
+    return question_screen ;
   } catch (error) {
     console.log(error.message);
   } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
     //console.log("log get airport distance")
   }
+};
+
+
+//update the gifts by deduct or add the gifts
+function mathForGifts(changeValue){
+  gifts = (parseInt(gifts) + parseInt(changeValue));
+  giftsUpdate.innerText = gifts;
+  return gifts
 }
 
-/*
 
-function mainProgram() {
-  const quizDiv = document.createElement('div');
-  const q = fetch_question_quiz()
-  quizDiv.innerHTML = `<p>${q}</p>`;
+
+//fetch the reward/robbery that affect gift change from Database
+async function changeGift(change){
+  try {
+    const response = await fetch('http://127.0.0.1:5100/giftschange/' + change);    // starting data download, fetch returns a promise which contains an object of type 'response'
+    const giftChangeData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+    console.log(giftChangeData);
+    console.log(gifts);
+    mathForGifts(giftChangeData)
+
+  }catch (error) {
+    console.log(error.message);
 }
-*/
+};
+//check answer of the quiz
+async function checkAnswer(){
+  const answerSelect = document.getElementById('answer-select');          //get the ICAO number of the chosen airport
+  const playerAnswer = answerSelect.options[answerSelect.selectedIndex].value;
+  console.log(playerAnswer);
+  console.log(gifts);
+  if (playerAnswer == correctAnswer){
+      console.log('Correct answer');
+      answerSelection.innerHTML = `Congrats! Your answer is correct. We send you some treasure box. Check your gifts now!`;
+      changeGift('add');
+  }else{
+    console.log('Wrong answer');
+    answerSelection.innerHTML = `Oops! Your answer is wrong. Sadly your gifts also got robbed! `;
+    changeGift('deduct');
+  }
+}
+
+//push true,false options and button for quiz game
+function pushQuiz(){
+
+  const selectForQuiz = document.createElement('select');
+  selectForQuiz.setAttribute('id', 'answer-select')
+  const optionTrue = document.createElement('option');
+  const optionFalse = document.createElement('option');
+  optionTrue.innerHTML = `True`;
+  optionTrue.value = 'true';
+  optionFalse.innerHTML = `False`;
+  optionFalse.value = 'false';
+  selectForQuiz.appendChild(optionTrue);
+  selectForQuiz.appendChild(optionFalse);
+  const quizButton = document.createElement('button');
+  quizButton.setAttribute('class', 'game-btn');
+  answerSelection.appendChild(selectForQuiz)
+  quizButton.appendChild(document.createTextNode('Submit'));
+  answerSelection.appendChild(quizButton);
+  quizButton.addEventListener('click', checkAnswer)
+};
 
 //Check how far from departure airport to Rovaniemi
 async function airport_start(evt) {
   evt.preventDefault();
   const selectOption = document.getElementById('airport-fetch');          //get the ICAO number of the chosen airport
-  icao_start = selectOption.options[selectOption.selectedIndex].value;
+  icao_start = selectOption.options[selectOption.selectedIndex].value;              //get value of selected option in <select> element!!!
   //console.log(icao_start);
 
   await getAirportPosition(icao_start); //fetch the departure airport info
 
-  const distanceP = await getAirportDistance(icao_start, icao_rovaniemi);
-  if (distanceP) {
-    fetch_question_quiz();
-    const p = document.getElementById('p');
-    const q = fetch_question_quiz();
-    p.innerHTML = `${q}`;
-    mainGame.appendChild(p);
-  }
+  await getAirportDistance(icao_start, icao_rovaniemi);
+  await co2Consumed(distanceTotal);
+  await fetch_question_quiz();
 
-  fetch_question_quiz();
+  pushQuiz();
 
 }
 
@@ -198,13 +260,14 @@ function airportOptions(jsonData) {
   select.setAttribute('id', 'airport-fetch');
   div_ICAO.appendChild(select);
   for (let i = 0; i < jsonData.length; i++) {
-    const airport_options = document.createElement('option');
+    const airport_options = document.createElement('option');                   //options for airport drop down list
     airport_options.setAttribute('value', `${jsonData[i]['ICAO']}`);
     airport_options.appendChild(
         document.createTextNode(`${jsonData[i]['Airport name']}`));
     select.appendChild(airport_options);
   }
   const button_airport = document.createElement('button');      //Button to choose the departure airport
+  button_airport.setAttribute('class', 'game-btn')
   button_airport.appendChild(document.createTextNode('Take off!'));
   button_airport.setAttribute('id', 'button-airport');
 
