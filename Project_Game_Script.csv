@@ -179,7 +179,7 @@ alter table game
 drop column gifts;
 
 alter table game
-add gifts varchar(255) DEFAULT 1000;
+add gifts varchar(255) DEFAULT 400;
 
 alter table game
 drop column co2_consumed;
