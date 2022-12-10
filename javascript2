@@ -1,0 +1,31 @@
+'use strict';
+const next_button = document.createElement('button');
+next_button.innerHTML = 'Adventure';
+next_button.setAttribute('class', 'game-btn');
+document.getElementById('popup').appendChild(next_button);
+next_button.onclick = function() {
+  document.getElementById('popup').innerHTML = '';
+  const question = document.createElement('p');
+  question.innerHTML = `Do you believe in Santa Claus?`;
+  document.getElementById('yes').appendChild(question);
+  const yes_button = document.createElement('button');
+  yes_button.innerHTML = 'Yes';
+  yes_button.setAttribute('class', 'game-btn');
+  document.getElementById('yes').appendChild(yes_button);
+  yes_button.onclick = function() {
+    alert(`Well what are you waiting for?!" 
+            "Hop on the plane and come to Santa`);
+    location = 'game_index.html';
+  };
+  const no_button = document.createElement('button');
+  no_button.innerHTML = 'No';
+  no_button.setAttribute('class', 'game-btn');
+  document.getElementById('yes').appendChild(no_button);
+  no_button.onclick = function() {
+    alert(`I will prove wrong!
+      Hop on the plane and get ready to be converted`);
+    location = 'game_index.html';
+  };
+};
+
+
