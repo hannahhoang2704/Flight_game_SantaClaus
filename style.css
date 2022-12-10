@@ -198,6 +198,13 @@ body {
     border-right: var(--white) 0.2rem solid;
 }
 
+#fetch-result-div{
+    display: inline-flex;
+}
+
+#rps-statement{
+    text-align: center;
+}
 footer{
     margin: auto;
     text-align: center;
@@ -217,7 +224,6 @@ footer{
     background-color: var(--yellow);
     color: black;
     box-shadow: none;
-    border: none;
     padding: 0.3rem;
     border: 2px solid black;
     border-radius: 0.4rem;
