@@ -30,8 +30,8 @@ let currentAirport_lat;
 let gifts;
 
 //main-game
+const mainProgramDiv = document.getElementById('main-program');
 const questionUpdate = document.getElementById('question');
-const mainGameDiv = document.getElementById('main-program');
 const answerSelection = document.getElementById('answer-selection');
 let correctAnswer;
 
@@ -56,7 +56,7 @@ function drawMapWithMarker(pos, icao) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
   }
-  map.setView(pos, 13);
+  map.setView(pos, 100);
 
   // then the marker
   L.marker(pos).addTo(map).bindPopup(icao).openPopup();
@@ -71,7 +71,7 @@ function drawMapWithMarkerRovaniemi(pos_Rov, icao_rovaniemi) {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
     }).addTo(map);
   }
-  map.setView(pos_Rov, 13);
+  map.setView(pos_Rov, 100);
 
   // then the marker
   L.marker(pos_Rov).addTo(map).bindPopup("Santa's House").openPopup();
@@ -238,7 +238,7 @@ async function checkAnswer() {
   }
 
   const next_button = document.createElement('button');
-  next_button.innerHTML = 'Next';
+  next_button.innerHTML = 'Next challenge';
   next_button.setAttribute('class', 'game-btn');
   document.getElementById('next-btn').appendChild(next_button);
   next_button.addEventListener('click', rock_paper_scissors);
@@ -269,13 +269,16 @@ function pushQuiz() {
   quizButton.addEventListener('click', checkAnswer);
   quizButton.onclick = function() {
     document.getElementById('question').innerHTML = '';
+
   }
 
 }
 
 //Rock paper scissor
 function rock_paper_scissors() {
+  rps_div.innerHTML = "<p>Let's play rock paper scissors:</p><br>";
   const selectRps = document.createElement('select');
+  selectRps.setAttribute('id', 'select-rps');
   rps_div.appendChild(selectRps)
   const rock = document.createElement('option');
   rock.innerText = 'Rock';
@@ -291,14 +294,66 @@ function rock_paper_scissors() {
   selectRps.appendChild(scissor)
   const rpsButton = document.createElement('button');
   rpsButton.setAttribute('class', 'game-btn');
-  rpsButton.innerText = 'Submit'
+  rpsButton.innerText = 'Submit';
   rps_div.appendChild(rpsButton)
+  rpsButton.addEventListener('click', rpsExecute);
 
+}
 
-
-  /*paper.setAttribute('class','game-btn')*/
+  //fetch the computer options in RPS game
+async function checkComputerOption(playerValue) {                 // asynchronous function is defined by the async keyword
+  try {                                               // error handling: try/catch/finally
+    const response = await fetch('http://127.0.0.1:5100/rpsgame/' + playerValue);    // starting data download, fetch returns a promise which contains an object of type 'response'
+    const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+    console.log(jsonData);
+    console.log(jsonData.computerChoice, jsonData.compScore, jsonData.status, jsonData.result);
+    const fetchResultDiv = document.getElementById('fetch-result-div');
+    const p = document.createElement('p');
+    p.appendChild(document.createTextNode("Computer chooses: "));
+    fetchResultDiv.appendChild(p);
+    const compValue = parseInt(jsonData.compScore);
+    const imgPlayerOption = document.createElement('img');
+    imgPlayerOption.src = `image/game-image/rock-paper-scissors/${compValue}.png`;
+    fetchResultDiv.appendChild(imgPlayerOption);
+    const h2 = document.createElement('h2');
+    h2.setAttribute('id', 'rqs-statement');
+    h2.appendChild(document.createTextNode(`${jsonData.result}`));
+    mainProgramDiv.appendChild(h2);
+    if (jsonData.status == -1){
+      changeGift('deduct');
+    }else if(jsonData.status == 1){
+      changeGift('add');
+    }
+    return jsonData
+  } catch (error) {
+    console.log(error.message);
   }
+}
 
+function showRpsResult(){
+  const gameResultDiv = document.createElement('div');
+  rps_div.appendChild(gameResultDiv)
+}
+
+//when button is clicked, collect the player's option in RPS game and compare with Computer game
+async function rpsExecute(evt){
+ evt.preventDefault();
+ const fetchResultDiv = document.createElement('div');
+ fetchResultDiv.setAttribute('id', 'fetch-result-div')
+ rps_div.appendChild(fetchResultDiv);
+ const p = document.createElement('p');
+ p.appendChild(document.createTextNode("You've choose: "));
+ fetchResultDiv.appendChild(p);
+ const selectRps = document.getElementById('select-rps');
+ const playerValue = selectRps.options[selectRps.selectedIndex].value;
+ console.log(playerValue)
+ const imgPlayerOption = document.createElement('img');
+ imgPlayerOption.src = `image/game-image/rock-paper-scissors/${playerValue}.png`;
+ fetchResultDiv.appendChild(imgPlayerOption);
+ console.log(playerValue)
+ await checkComputerOption(playerValue);
+ await showRpsResult();
+};
 //Check how far from departure airport to Rovaniemi
 async function airport_start(evt) {
   evt.preventDefault();
@@ -307,7 +362,6 @@ async function airport_start(evt) {
   //console.log(icao_start);
 
   await getAirportPosition(icao_start); //fetch the departure airport info
-
   await getAirportDistance(icao_start, icao_rovaniemi);
   await co2Consumed(distanceTotal);
   await fetch_question_quiz();
@@ -376,9 +430,12 @@ async function airportFetches() {                 // asynchronous function is de
     ICAO_p.innerText = `City can not found! Choose another city.`;        //inform the city is not in database
     div_ICAO.appendChild(ICAO_p);
 
-  } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
   }
 }
 
 //call-back function to fetch all airport in chosen city
 search.addEventListener('click', fetch_airport);
+
+if (gifts == 0){
+  alert('Game over!')
+}
