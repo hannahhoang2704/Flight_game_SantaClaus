@@ -20,7 +20,8 @@ const windSpeed = document.getElementById('airport-wind');
 const weatherIcon = document.getElementById('weather-icon');
 
 let icao_start;                       //ICAO of the depature airport
-const icao_rovaniemi = 'EFRO';               //ICAO of Rovaniemi
+const icao_rovaniemi = 'EFRO';//ICAO of Rovaniemi
+const pos_Rov = [66.565, 25.83];
 let distanceTotal;
 let currentAirport = ' ';
 let currentAirport_long;
@@ -33,12 +34,13 @@ const mainGameDiv = document.getElementById('main-program');
 const answerSelection = document.getElementById('answer-selection');
 let correctAnswer;
 
-
 //update gifts
 //giftsUpdate.innerText = gifts;
 //Add maps
 
 let map;
+
+
 
 function drawMapWithMarker(pos, icao) {
   // Use the leaflet.js library to show the location on the map (https://leafletjs.com/)
@@ -52,7 +54,22 @@ function drawMapWithMarker(pos, icao) {
   map.setView(pos, 13);
 
   // then the marker
-  L.marker(pos).addTo(map).bindPopup(icao).openPopup();
+  L.marker(pos).addTo(map).bindPopup('Starting Point').openPopup();
+}
+
+function drawMapWithMarkerRovaniemi(pos_Rov, icao_rovaniemi) {
+  // Use the leaflet.js library to show the location on the map (https://leafletjs.com/)
+  // first the map itself if it has not been created before
+  if (map == null) {
+    map = L.map('map');
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(map);
+  }
+  map.setView(pos_Rov, 13);
+
+  // then the marker
+  L.marker(pos_Rov).addTo(map).bindPopup('Rovaniemi').openPopup();
 }
 
 // function to update the game status
@@ -67,7 +84,8 @@ function updateWeather(temp, condition, wind, icon) {
   temperature.innerHTML = `<span>${temp}°C</span>`;
   weatherCondition.innerHTML = `<span>${condition}</span>`;
   windSpeed.innerHTML = `<span>${wind} m/s</span>`;
-  weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) + '@2x.png';
+  weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) +
+      '@2x.png';
 }
 
 //change the quiz in main program div
@@ -105,12 +123,13 @@ async function getAirportPosition(icao) {
     //update player name,gifts and co2 consumption
     const screen_name = jsonData.screen_name;
     gifts = jsonData.gifts;
-    console.log(gifts)
+    console.log(gifts);
     let currentco2 = jsonData.co2_consumed;
     updateGameStatus(screen_name, gifts, currentco2);
 
     // and draw the map
     drawMapWithMarker(pos, icao);
+    drawMapWithMarkerRovaniemi(pos_Rov, icao_rovaniemi);
 
     //fetch weather of the airport
     const responseWeather = await fetch(
@@ -128,23 +147,25 @@ async function getAirportPosition(icao) {
     console.log('asynchronous load complete');
   }
 }
-async function co2Consumed(distance){
-      const response = await fetch(
-        'http://127.0.0.1:5100/co2consumed/'+ distance);    // starting data download, fetch returns a promise which contains an object of type 'response'
-      const jsonData = await response.json();
-      console.log(jsonData)
-      currentco2Update.innerText = jsonData;
-      return jsonData
-    }
+
+async function co2Consumed(distance) {
+  const response = await fetch(
+      'http://127.0.0.1:5100/co2consumed/' + distance);    // starting data download, fetch returns a promise which contains an object of type 'response'
+  const jsonData = await response.json();
+  console.log(jsonData);
+  currentco2Update.innerText = jsonData;
+  return jsonData;
+}
 
 //get distance between 2 airport
 async function getAirportDistance(icao_start, icao_end) {
   try {
     const response = await fetch(
-        'http://127.0.0.1:5100/airportdistance?start=' + icao_start + '&end=' + icao_end);    // starting data download, fetch returns a promise which contains an object of type 'response'
+        'http://127.0.0.1:5100/airportdistance?start=' + icao_start + '&end=' +
+        icao_end);    // starting data download, fetch returns a promise which contains an object of type 'response'
     const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(jsonData);
-    //drawMapWithLine(jsonData.start, jsonData.end)
+    drawMapWithLine(jsonData.start, jsonData.end);
     distanceTotal = jsonData.dist;     // log the result to the console
     distanceToRov.innerHTML = `${jsonData.dist}`;
     return jsonData;
@@ -157,16 +178,16 @@ async function getAirportDistance(icao_start, icao_end) {
 //Fetch the quiz game
 async function fetch_question_quiz() {
   try {
-      const response = await fetch('http://127.0.0.1:5100/quiz');    // starting data download, fetch returns a promise which contains an object of type 'response'
-      const quizData = await response.json();          // retrieving the data retrieved from the response object using the json() function
-      console.log(quizData);
-      console.log(quizData.question);     // log the result to the console
-      const question_screen = quizData.question;
-      correctAnswer = quizData.answer;
-      answerSelection.innerHTML ="";
-      quiz(question_screen);
+    const response = await fetch('http://127.0.0.1:5100/quiz');    // starting data download, fetch returns a promise which contains an object of type 'response'
+    const quizData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+    console.log(quizData);
+    console.log(quizData.question);     // log the result to the console
+    const question_screen = quizData.question;
+    correctAnswer = quizData.answer;
+    answerSelection.innerHTML = '';
+    quiz(question_screen);
 
-    return question_screen ;
+    return question_screen;
   } catch (error) {
     console.log(error.message);
   } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
@@ -174,51 +195,67 @@ async function fetch_question_quiz() {
   }
 };
 
-
 //update the gifts by deduct or add the gifts
-function mathForGifts(changeValue){
+function mathForGifts(changeValue) {
   gifts = (parseInt(gifts) + parseInt(changeValue));
   giftsUpdate.innerText = gifts;
-  return gifts
+  return gifts;
 }
 
-
-
 //fetch the reward/robbery that affect gift change from Database
-async function changeGift(change){
+async function changeGift(change) {
   try {
     const response = await fetch('http://127.0.0.1:5100/giftschange/' + change);    // starting data download, fetch returns a promise which contains an object of type 'response'
     const giftChangeData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(giftChangeData);
     console.log(gifts);
-    mathForGifts(giftChangeData)
+    mathForGifts(giftChangeData);
 
-  }catch (error) {
+  } catch (error) {
     console.log(error.message);
-}
+  }
 };
+
 //check answer of the quiz
-async function checkAnswer(){
+async function checkAnswer() {
   const answerSelect = document.getElementById('answer-select');          //get the ICAO number of the chosen airport
   const playerAnswer = answerSelect.options[answerSelect.selectedIndex].value;
   console.log(playerAnswer);
   console.log(gifts);
-  if (playerAnswer == correctAnswer){
-      console.log('Correct answer');
-      answerSelection.innerHTML = `Congrats! Your answer is correct. We send you some treasure box. Check your gifts now!`;
-      changeGift('add');
-  }else{
+  if (playerAnswer == correctAnswer) {
+    console.log('Correct answer');
+    answerSelection.innerHTML = `Congrats! Your answer is correct. We send you some treasure box. Check your gifts now!`;
+    changeGift('add');
+  } else {
     console.log('Wrong answer');
     answerSelection.innerHTML = `Oops! Your answer is wrong. Sadly your gifts also got robbed! `;
     changeGift('deduct');
   }
+
+  setTimeout(() => {
+    clearContent('user-info');
+    clearContent('question');
+    clearContent('answer-selection');
+    clearContent('next-btn')
+  },5000)
+
+
+  const next_button = document.createElement('button');
+  next_button.innerHTML = 'Next';
+  next_button.setAttribute('class', 'game-btn');
+  document.getElementById('next-btn').appendChild(next_button);
+  next_button.addEventListener('click', rock_paper_scissors);
+  next_button.onclick = function() {
+    document.getElementById('next-btn').innerHTML = '';
+    document.getElementById('answer-selection').innerHTML = '';
+  }
 }
 
 //push true,false options and button for quiz game
-function pushQuiz(){
+function pushQuiz() {
 
   const selectForQuiz = document.createElement('select');
-  selectForQuiz.setAttribute('id', 'answer-select')
+  selectForQuiz.setAttribute('id', 'answer-select');
   const optionTrue = document.createElement('option');
   const optionFalse = document.createElement('option');
   optionTrue.innerHTML = `True`;
@@ -229,11 +266,35 @@ function pushQuiz(){
   selectForQuiz.appendChild(optionFalse);
   const quizButton = document.createElement('button');
   quizButton.setAttribute('class', 'game-btn');
-  answerSelection.appendChild(selectForQuiz)
+  answerSelection.appendChild(selectForQuiz);
   quizButton.appendChild(document.createTextNode('Submit'));
   answerSelection.appendChild(quizButton);
-  quizButton.addEventListener('click', checkAnswer)
-};
+  quizButton.addEventListener('click', checkAnswer);
+  quizButton.onclick = function() {
+    document.getElementById('question').innerHTML = '';
+  }
+
+}
+
+//Rock paper scissor
+  function rock_paper_scissors() {
+    const rock = document.createElement('button');
+    rock.innerHTML = 'Rock';
+    rock.value = '0';
+    rock.setAttribute('class','game-btn')
+    document.getElementById('rock_paper_scissors').appendChild(rock);
+    const paper = document.createElement('button');
+    paper.innerHTML = 'Paper';
+    paper.value = '1';
+    paper.setAttribute('class','game-btn')
+    document.getElementById('rock_paper_scissors').appendChild(paper);
+    const scissor = document.createElement('button');
+    scissor.innerHTML = 'Scissor';
+    scissor.value = '2';
+    scissor.setAttribute('class','game-btn')
+    document.getElementById('rock_paper_scissors').appendChild(scissor);
+
+  }
 
 //Check how far from departure airport to Rovaniemi
 async function airport_start(evt) {
@@ -252,6 +313,18 @@ async function airport_start(evt) {
 
 }
 
+/* draw the map with two positions and a line between them */
+function drawMapWithLine(start_pos, end_pos) {
+  // draw the line, http://leafletjs.com/reference.html#polyline
+  let latlngs = Array();
+  latlngs.push(start_pos);
+  latlngs.push(end_pos);
+  const polyline = L.polyline(latlngs, {color: 'red'}).addTo(map);
+
+  // then scale the map to fit the line
+  map.fitBounds(polyline.getBounds());
+}
+
 //All the airports are listed after player choose the city
 function airportOptions(jsonData) {
   ICAO_p.innerText = 'List of airports:';                                 //Make a dropdrown list of depature airports
@@ -267,7 +340,7 @@ function airportOptions(jsonData) {
     select.appendChild(airport_options);
   }
   const button_airport = document.createElement('button');      //Button to choose the departure airport
-  button_airport.setAttribute('class', 'game-btn')
+  button_airport.setAttribute('class', 'game-btn');
   button_airport.appendChild(document.createTextNode('Take off!'));
   button_airport.setAttribute('id', 'button-airport');
 
@@ -275,9 +348,11 @@ function airportOptions(jsonData) {
 
 ////////////////post method to get ICAO of airport to flask server!!!!
 
-  button_airport.addEventListener('click', airport_start);           //click button to choose the departure airport
+  button_airport.addEventListener('click', airport_start); //click button to choose the departure airport
+  button_airport.onclick = function() {
+    document.getElementById('user-info').innerHTML = '';
+  }
 }
-
 //fetch all the airports in the chosen city
 function fetch_airport(evt) {
   evt.preventDefault();
@@ -304,4 +379,3 @@ async function airportFetches() {                 // asynchronous function is de
 
 //call-back function to fetch all airport in chosen city
 search.addEventListener('click', fetch_airport);
-
