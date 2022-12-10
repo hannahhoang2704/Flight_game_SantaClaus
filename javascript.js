@@ -1,5 +1,6 @@
 'use strict';
 
+
 //start game page_ index.html
 
 const search = document.getElementById('start');                //button to fetch all the airports in chosen city
@@ -34,6 +35,10 @@ const mainGameDiv = document.getElementById('main-program');
 const answerSelection = document.getElementById('answer-selection');
 let correctAnswer;
 
+//Rock Paper Scicssors
+const rps_div = document.getElementById('rps');
+
+
 //update gifts
 //giftsUpdate.innerText = gifts;
 //Add maps
@@ -54,7 +59,7 @@ function drawMapWithMarker(pos, icao) {
   map.setView(pos, 13);
 
   // then the marker
-  L.marker(pos).addTo(map).bindPopup('Starting Point').openPopup();
+  L.marker(pos).addTo(map).bindPopup(icao).openPopup();
 }
 
 function drawMapWithMarkerRovaniemi(pos_Rov, icao_rovaniemi) {
@@ -69,7 +74,7 @@ function drawMapWithMarkerRovaniemi(pos_Rov, icao_rovaniemi) {
   map.setView(pos_Rov, 13);
 
   // then the marker
-  L.marker(pos_Rov).addTo(map).bindPopup('Rovaniemi').openPopup();
+  L.marker(pos_Rov).addTo(map).bindPopup("Santa's House").openPopup();
 }
 
 // function to update the game status
@@ -232,14 +237,6 @@ async function checkAnswer() {
     changeGift('deduct');
   }
 
-  setTimeout(() => {
-    clearContent('user-info');
-    clearContent('question');
-    clearContent('answer-selection');
-    clearContent('next-btn')
-  },5000)
-
-
   const next_button = document.createElement('button');
   next_button.innerHTML = 'Next';
   next_button.setAttribute('class', 'game-btn');
@@ -277,23 +274,29 @@ function pushQuiz() {
 }
 
 //Rock paper scissor
-  function rock_paper_scissors() {
-    const rock = document.createElement('button');
-    rock.innerHTML = 'Rock';
-    rock.value = '0';
-    rock.setAttribute('class','game-btn')
-    document.getElementById('rock_paper_scissors').appendChild(rock);
-    const paper = document.createElement('button');
-    paper.innerHTML = 'Paper';
-    paper.value = '1';
-    paper.setAttribute('class','game-btn')
-    document.getElementById('rock_paper_scissors').appendChild(paper);
-    const scissor = document.createElement('button');
-    scissor.innerHTML = 'Scissor';
-    scissor.value = '2';
-    scissor.setAttribute('class','game-btn')
-    document.getElementById('rock_paper_scissors').appendChild(scissor);
+function rock_paper_scissors() {
+  const selectRps = document.createElement('select');
+  rps_div.appendChild(selectRps)
+  const rock = document.createElement('option');
+  rock.innerText = 'Rock';
+  rock.value = '0';
+  selectRps.appendChild(rock);
+  const paper = document.createElement('option');
+  paper.innerHTML = 'Paper';
+  paper.value = '1';
+  selectRps.appendChild(paper)
+  const scissor = document.createElement('option');
+  scissor.innerHTML = 'Scissor';
+  scissor.value = '2';
+  selectRps.appendChild(scissor)
+  const rpsButton = document.createElement('button');
+  rpsButton.setAttribute('class', 'game-btn');
+  rpsButton.innerText = 'Submit'
+  rps_div.appendChild(rpsButton)
 
+
+
+  /*paper.setAttribute('class','game-btn')*/
   }
 
 //Check how far from departure airport to Rovaniemi
