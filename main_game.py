@@ -26,94 +26,8 @@ cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
 
-rovaniemi_deg = [66.565, 25.83]
-departure_ICAO = ""
 
-
-def pick_airport(x1, x, y1, y):
-    list_of_airport = []
-    list_of_deg = []
-    sql = "SELECT name, latitude_deg, longitude_deg FROM airport"
-    sql += " WHERE latitude_deg between " + str(x1) + " and " + str(x) + \
-           " and longitude_deg between " + str(y1) + " and " + str(y)
-    # print(sql)
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    result = cursor.fetchall()
-    if cursor.rowcount > 0:
-        for row in result:
-            list_of_airport.append(row[0])
-            list_of_deg.append([row[1], row[2]])
-            #print(row)
-            # print(list_of_airport)
-    random_nr = random.randint(0, len(list_of_airport) - 1)
-    while distance.distance(list_of_deg[random_nr], rovaniemi_deg).km > new_transit.calc_distance_to_Rov() or distance.distance(list_of_deg[random_nr], rovaniemi_deg).km == 0 or distance.distance(list_of_deg[random_nr], rovaniemi_deg).km == new_transit.calc_distance_to_Rov():
-        random_nr = random.randint(0, len(list_of_airport) - 1)
-
-    return list_of_airport[random_nr], list_of_deg[random_nr]  # random airport to transit within the range
-
-
-"""
-
-def get5Airport(currentlocation):
-    airports_list =[currentlocation]
-    degree_list = []
-    visited_airport =[]
-    for i in range(5):
-        deg_lat = currentlocation[0]
-         # Latitude and longitude degree of departure airport
-        deg_long = currentlocation[1]
-
-        coordinator_scope_x = rovaniemi_deg[
-                                  0] - deg_lat  # calculate the coordinator(x,y) scope within depature airport and Rovaniemi airport
-        coordinator_scope_y = rovaniemi_deg[1] - deg_long
-
-        dist_between_each_scope_x = round(coordinator_scope_x / 3, 4)
-        dist_between_each_scope_y = round(coordinator_scope_y / 3, 4)
-
-        ##transit via 5 different airports to play game and collect gift
-
-        # transit via 5 different airports before arrive Rovaniemi
-        print(airports_list[i])
-        if dist_between_each_scope_x > dist_between_each_scope_y:
-            dist_between_each_scope = dist_between_each_scope_x
-        else:
-            dist_between_each_scope = dist_between_each_scope_y
-
-        point_x = degree_list[i][0] + dist_between_each_scope
-        point_y = degree_list[i][1] + dist_between_each_scope
-
-        point_x_minus = degree_list[i][0] - dist_between_each_scope
-        point_y_minus = degree_list[i][1] - dist_between_each_scope
-
-        pick_airport(point_x_minus, point_x, point_y_minus, point_y)
-
-        airport_name = \
-            pick_airport(point_x_minus, point_x, point_y_minus, point_y)[
-                0]  # call the transit airport
-        airport_spot_deg = \
-            pick_airport(point_x_minus, point_x, point_y_minus, point_y)[1]
-
-        new_transit = Airport(airport_name, airport_spot_deg[0],
-                              airport_spot_deg[1])
-
-        new_transit.airport_info()  # call our the airport where you are
-        new_transit.weather_check()  # weather info of the transit
-
-        visited_airport(airport_name,
-                              new_transit.deg)  # add the transit airport to the list
-        dist_between_each_a = distance_between_each_airport(i + 1)
-        print(
-            f"You've flew {dist_between_each_a} km")  # Distance between each airport
-        co2_each_transit = api_co2(dist_between_each_a)
-        print(
-            f"You've just consumed {co2_each_transit}")  # Print out the co2 consumption after moved to new transit
-        print(
-            f"Total consumption: {round(player1.co2_add(co2_each_transit), 2)}")  # Total amount of C02 consumption
-        print(
-            f"Still {new_transit.calc_distance_to_Rov():.2f} km away from Rovaniemi")  # Distance from certain transit airport to Rovaniemi
-
-"""
+#Quiz game function
 def questions_answers():
 
     # Questionaires and answers
@@ -166,6 +80,54 @@ def questions_answers():
     return random_ques, right_answer
 
 
+
+#Rock-paper-scissors game
+@app.route('/rpsgame/<value>')
+def rock_paper_scissors(value):
+    player_score = 0
+    comp_score = 0
+    round = 0
+    option = ["rock", "paper", "scissors"]
+    user_choice = int(value)
+    computer_choice = random.randint(0, len(option) - 1)
+    print(option[computer_choice])
+    choice_matrix = [["It\'s a draw", "You lose", "You win"],
+                     ["You win", "It\'s a draw", "You lose"],
+                     ["You lose", "You win", "It\'s a draw"]]
+    status_matrix = [[0, -1, 1],
+                     [1, 0, -1],            #0: it's draw, -1: you lost, 1: you won
+                     [-1, 1, 0]]
+    result = choice_matrix[user_choice][computer_choice]
+    status = status_matrix[user_choice][computer_choice]
+    print(result)
+    print(f"You: {player_score} | Comp: {comp_score} ")
+    round += 1
+    response = {
+        'computerChoice': option[computer_choice],
+        'userChoice': option[user_choice],
+        'playerScore': player_score,
+        'compScore': comp_score,
+        'round': round,
+        'result': result,
+        'status': status
+    }
+    return response
+
+
+def airport_position_by_icao(ICAO):
+    sql = "SELECT name, latitude_deg, longitude_deg from airport"
+    sql += " WHERE ident='" + ICAO + "'"
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    result = cursor.fetchall()
+    if cursor.rowcount > 0:
+        for row in result:
+            deg = [row[1], row[2]]
+            # print(deg)
+    return deg
+
+
+#Check the quiz game
 @app.route('/quiz')
 def quiz_game():
     question, answer = questions_answers()
@@ -223,9 +185,9 @@ def gamerinfo():
     args = request.args
     name = args.get('name')
     location = args.get('location')
+    player_name = name
     departure_ICAO = location
-    print(departure_ICAO)
-    #print(name, location)
+    print(player_name, departure_ICAO)
     sql = "INSERT into game (screen_name, location) "
     sql += "VALUES ('" + name + "','" + location + "')"
     #print(sql)
@@ -350,5 +312,8 @@ def api_co2(d):
     return amount
 
 
+
+
 if __name__ == '__main__':
     app.run(use_reloader=True, host='127.0.0.1', port=5100)
+    
