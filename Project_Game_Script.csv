@@ -187,6 +187,9 @@ drop column co2_consumed;
 alter table game
 add co2_consumed varchar(255) DEFAULT 0;
 
+alter table game
+drop column co2_budget;
+
 
 #### to delete rows in game table:
 #set foreign_key_checks = 0;
