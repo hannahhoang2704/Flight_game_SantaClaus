@@ -139,7 +139,7 @@ body {
 
 .space-evenly {
     justify-content: space-evenly;
-    
+
 }
 
 #user-info{
@@ -200,6 +200,7 @@ body {
 
 #fetch-result-div{
     display: inline-flex;
+    margin: 1rem
 }
 
 #rps-statement{
