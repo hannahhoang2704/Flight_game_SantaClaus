@@ -191,7 +191,6 @@ def update_gifts_in_DB(gifts):
     return gifts
 
 
-
 #gamer input departure airport and name
 @app.route('/gamerinfo')
 def gamerinfo():
@@ -214,6 +213,20 @@ def gamerinfo():
     ap = airport(location)
     result['airport'] = ap
     print(json.dumps(result))
+    return result
+
+#Countdown to Christmas API
+#http://127.0.0.1:5100/countdown
+@app.route('/countdown')
+def countdown():
+    request = "https://christmas-days.anvil.app/_/api/get_days"
+    response = requests.get(request).json()
+    print(response)
+    days_left = response['Days to Christmas']
+    statement = str(days_left) + " days left till Christmas"
+    result = {
+        'daysleft': days_left,
+        'statement': statement}
     return result
 
 #fetch airport in the city
