@@ -176,13 +176,28 @@ async function getAirportDistance(icao_start, icao_end) {
 
 }
 
+
+//fetch countdown Christmas API
+async function addCountDown(){
+  try {
+    const response = await fetch('http://127.0.0.1:5100/countdown');    // starting data download, fetch returns a promise which contains an object of type 'response'
+    const countDownData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+    console.log(countDownData);
+    const statement = countDownData.statement;
+    document.getElementById('count-down').innerText = statement;
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+
 //Fetch the quiz game
 async function fetch_question_quiz() {
   try {
     const response = await fetch('http://127.0.0.1:5100/quiz');    // starting data download, fetch returns a promise which contains an object of type 'response'
     const quizData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(quizData);
-    console.log(quizData.question);     // log the result to the console
+    //console.log(quizData.question);     // log the result to the console
     const question_screen = quizData.question;
     correctAnswer = quizData.answer;
     answerSelection.innerHTML = '';
@@ -366,13 +381,12 @@ async function airport_start(evt) {
   evt.preventDefault();
   const selectOption = document.getElementById('airport-fetch');          //get the ICAO number of the chosen airport
   icao_start = selectOption.options[selectOption.selectedIndex].value;              //get value of selected option in <select> element!!!
-  //console.log(icao_start);
 
   await getAirportPosition(icao_start); //fetch the departure airport info
   await getAirportDistance(icao_start, icao_rovaniemi);
   await co2Consumed(distanceTotal);
+  await addCountDown();
   await fetch_question_quiz();
-
   pushQuiz();
 }
 
