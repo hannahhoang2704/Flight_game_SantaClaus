@@ -82,6 +82,10 @@ function updateGameStatus(screen_name, gifts, currentco2) {
   currentco2Update.innerText = currentco2;
 }
 
+
+
+
+
 //function to update the weather in HTML
 function updateWeather(temp, condition, wind, icon) {
   temperature.innerHTML = `<span>${temp}°C</span>`;
@@ -90,6 +94,7 @@ function updateWeather(temp, condition, wind, icon) {
   weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) +
       '@2x.png';
 }
+
 
 //change the quiz in main program div
 function quiz(question_screen) {
@@ -176,7 +181,7 @@ async function getAirportDistance(icao_start, icao_end) {
 
 }
 
-
+/*
 //fetch countdown Christmas API
 async function addCountDown(){
   try {
@@ -188,7 +193,7 @@ async function addCountDown(){
   } catch (error) {
     console.log(error.message);
   }
-}
+}*/
 
 
 //Fetch the quiz game
@@ -336,7 +341,7 @@ async function checkComputerOption(playerValue) {                 // asynchronou
     fetchResultDiv.appendChild(imgPlayerOption);
     const h2 = document.createElement('h2');
     h2.setAttribute('id', 'rps-statement');
-    h2.appendChild(document.createTextNode(`${jsonData.result}`));
+    h2.appendChild(document.createTextNode(`${jsonData.result}. Check your gifts update!`));
     mainProgramDiv.appendChild(h2);
     if (jsonData.status == -1){
       changeGift('deduct');
@@ -385,7 +390,7 @@ async function airport_start(evt) {
   await getAirportPosition(icao_start); //fetch the departure airport info
   await getAirportDistance(icao_start, icao_rovaniemi);
   await co2Consumed(distanceTotal);
-  await addCountDown();
+  //await addCountDown();
   await fetch_question_quiz();
   pushQuiz();
 }
