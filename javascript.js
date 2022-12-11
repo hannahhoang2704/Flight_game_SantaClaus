@@ -91,16 +91,12 @@ function updateWeather(temp, condition, wind, icon) {
   temperature.innerHTML = `<span>${temp}°C</span>`;
   weatherCondition.innerHTML = `<span>${condition}</span>`;
   windSpeed.innerHTML = `<span>${wind} m/s</span>`;
-  weatherIcon.src = 'https://openweathermap.org/img/wn/' + str(icon) +
-      '@2x.png';
+  weatherIcon.src = `https://openweathermap.org/img/wn/${icon}@2x.png`;
+  console.log(weatherIcon.src)
 }
 
 
-//change the quiz in main program div
-function quiz(question_screen) {
-  questionUpdate.innerHTML = `Answer the question below: <br> ${question_screen}`;
 
-}
 
 //fetch the airport info(ICAO, name, long, lat) where you want to flight to
 async function getAirportPosition(icao) {
@@ -143,6 +139,7 @@ async function getAirportPosition(icao) {
         currentAirport_long);    // starting data download, fetch returns a promise which contains an object of type 'response'
     const jsonDataWeather = await responseWeather.json();
     console.log(jsonDataWeather);               // JsonDataweather objects
+    console.log(jsonDataWeather.icon)
     updateWeather(jsonDataWeather.temperature, jsonDataWeather.description,
         jsonDataWeather.wind, jsonDataWeather.icon);      //update weather
 
@@ -195,18 +192,38 @@ async function addCountDown(){
   }
 }*/
 
+//type effect
+function type_effect(text, id){
+let i = 0;
+let txt = `Do you think: ${text}`;
+var speed = 70;
+typeWriter()
+function typeWriter() {
+  if (i < txt.length) {
+    document.getElementById(`${id}`).innerHTML += txt.charAt(i);
+    i++;
+    setTimeout(typeWriter, speed);
+  }
+}
+}
 
+//change the quiz in main program div
+function quiz(question_screen) {
+  questionUpdate.innerHTML = `Answer the question below: <br> ${question_screen}`;
+
+}
 //Fetch the quiz game
 async function fetch_question_quiz() {
   try {
     const response = await fetch('http://127.0.0.1:5100/quiz');    // starting data download, fetch returns a promise which contains an object of type 'response'
     const quizData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(quizData);
-    //console.log(quizData.question);     // log the result to the console
+    //console.log(quizData.question);                // log the result to the console
     const question_screen = quizData.question;
     correctAnswer = quizData.answer;
     answerSelection.innerHTML = '';
-    quiz(question_screen);
+    type_effect(question_screen, 'question')
+    //quiz(question_screen);
     return question_screen;
   } catch (error) {
     console.log(error.message);
@@ -298,8 +315,10 @@ function pushQuiz() {
 
 }
 
+
 //Rock paper scissor
 function rock_paper_scissors() {
+
   rps_div.innerHTML = "<p>Let's play rock paper scissors:</p><br>";
   const selectRps = document.createElement('select');
   selectRps.setAttribute('id', 'select-rps');
@@ -361,6 +380,7 @@ function showRpsResult(){
 
 //when button is clicked, collect the player's option in RPS game and compare with Computer game
 async function rpsExecute(evt){
+
    evt.preventDefault();
    const fetchResultDiv = document.createElement('div');
    fetchResultDiv.setAttribute('id', 'fetch-result-div')
@@ -458,7 +478,7 @@ async function airportFetches() {                 // asynchronous function is de
 search.addEventListener('click', fetch_airport);
 
 //Game over when there's no gift
-if (gifts == 0){
+if (gifts <= 0){
   alert('Game over! You have 0 gift');
   location = "Exit.html";
 }
