@@ -21,11 +21,17 @@ body {
     width: 80%;
     background-color: var(--burgundy);
     color: var(--white);
-    font-family: 'Lora', serif;
+    font-family: 'Hanken Grotesk', sans-serif;
     font-weight: 400;
     margin: auto;
 }
 
+button{
+    font-family: 'Pacifico', cursive;
+}
+h1{
+    font-family: 'Codystar', cursive;
+}
 /*Header part*/
 
 .nav-container {
@@ -74,12 +80,14 @@ body {
     color: var(--white);
     position: relative;
     margin: 0 2rem;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
+    font-family: 'Pacifico', cursive;
+
 }
 
 .nav-btn::before { /*underline effect*/
     transition: 300ms;
-    height: 15px;
+    height: 10px;
     content: "";
     position: absolute;
     background-color: var(--burgundy);
@@ -87,7 +95,7 @@ body {
 
 .nav-link-ltr::before {
     width: 0%;
-    bottom: 20px;
+    bottom: 40px;
 }
 
 .nav-link-ltr:hover::before {
@@ -125,9 +133,16 @@ body {
 }
 #adventure-btn{
     position: relative;
-    right: 0rem;
+    left: 70%;
 }
 /*Main game page*/
+#player-name{
+    font-family: 'Pacifico', cursive;
+}
+.update-nr{
+    font-family: 'Codystar', cursive;
+    color: var(--yellow);
+}
 
 .flex-wrap {
     flex-wrap: wrap;
@@ -223,6 +238,7 @@ footer{
 #footer-note{
    font-size: 0.6rem;
 }
+
 /*element inside the game*/
 
 #question, #answer-selection{
@@ -236,6 +252,7 @@ footer{
     border: 2px solid black;
     border-radius: 0.4rem;
     margin-left: 1.5rem;
+    font-family: 'Pacifico', cursive;
 }
 .game-btn:hover{
    background-color: var(--darkgreen);
@@ -255,7 +272,9 @@ footer{
 .exit-page img {
     max-width: 40%;
 }
-
+#game-over{
+    font-family: 'Codystar', cursive;
+}
 /*Snowflake fall effect*/
 
 .snowflake {
@@ -396,13 +415,16 @@ footer{
 /*Countdown watch*/
 .tickcounter{
     display: block;
-    width: 100%;
+    width: 70%;
     position: relative;
     padding-bottom: 25%;
     border-radius: 0.3rem;
+    margin: auto;
 }
 .countdown{
-    width: 50%;
+    font-family: 'Codystar', cursive;
+    font-size: 1.4rem;
+    width: 60%;
     margin:auto;
     text-align: center;
 }
