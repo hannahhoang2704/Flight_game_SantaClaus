@@ -90,7 +90,9 @@ def rock_paper_scissors(value):
     option = ["rock", "paper", "scissors"]
     user_choice = int(value)
     computer_choice = random.randint(0, len(option) - 1)
+
     print(option[computer_choice])
+    computer_index = option.index(option[computer_choice])
     choice_matrix = [["It\'s a draw", "You lose", "You win"],
                      ["You win", "It\'s a draw", "You lose"],
                      ["You lose", "You win", "It\'s a draw"]]
@@ -105,9 +107,7 @@ def rock_paper_scissors(value):
     response = {
         'computerChoice': option[computer_choice],
         'userChoice': option[user_choice],
-        'playerScore': player_score,
-        'compScore': comp_score,
-        'round': round,
+        'compImg': computer_index,
         'result': result,
         'status': status
     }
@@ -178,6 +178,19 @@ def change_in_gift(change):
         gifts_change = str(deduct_gift())
     return gifts_change
 
+#update gifts in DB
+@app.route('/updategifts/<gifts>')
+def update_gifts_in_DB(gifts):
+    #gifts = float(gifts)
+    sql = "UPDATE game"
+    sql += " SET gifts=" + gifts + " ORDER BY ID DESC LIMIT 1"
+    print(sql)
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    print(gifts)
+    return gifts
+
+
 
 #gamer input departure airport and name
 @app.route('/gamerinfo')
@@ -187,7 +200,7 @@ def gamerinfo():
     location = args.get('location')
     player_name = name
     departure_ICAO = location
-    print(player_name, departure_ICAO)
+    #print(player_name, departure_ICAO)
     sql = "INSERT into game (screen_name, location) "
     sql += "VALUES ('" + name + "','" + location + "')"
     #print(sql)
@@ -308,6 +321,11 @@ def api_co2(d):
     response = requests.get(f).json()
     print(response)
     amount = str(response[0]['co2'])
+    sql = "UPDATE game"
+    sql += " SET co2_consumed=" + amount +" ORDER BY ID DESC LIMIT 1"
+    print(sql)
+    cursor = connection.cursor()
+    cursor.execute(sql)
     print(amount)
     return amount
 
@@ -316,4 +334,3 @@ def api_co2(d):
 
 if __name__ == '__main__':
     app.run(use_reloader=True, host='127.0.0.1', port=5100)
-    
