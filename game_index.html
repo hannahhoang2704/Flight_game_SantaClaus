@@ -14,6 +14,7 @@
 
     <!--CSS stylesheet-->
     <link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 <div class="snowflakes" aria-hidden="true">
@@ -35,6 +36,9 @@
     <div class="snowflake">
         ❆
     </div>
+    <div class="snowflake">
+        ❆
+    </div>
 </div>
 <div class="nav-container nav-area">
         <header class="logo"><img src="image/logo/moustache2_clear.png" alt="Logo" width=300px></header>
@@ -51,7 +55,7 @@
             <form id="username-form">  <!-- -->
                     <label for="user-name">Your name:</label>
                     <input id="user-name" type="text" name="name" placeholder="Your name" class="input-class" required>
-                    <p id="welcome"></p>
+                    <!--<p id="welcome"></p>-->
 
                     <p>Where do you want to fly from:</p>
                     <input id="city" type="text" name="municipality" placeholder="City" class="input-class" required>
@@ -82,6 +86,7 @@
                 </table>
             </section>
             <div id="main-program">
+                <h1 id="count-down"></h1>
                 <p id="question"></p>
                 <div id="answer-selection"></div>
                 <div id="next-btn"></div>
@@ -90,7 +95,6 @@
             <section id="weather-section" class="box">
                 <header>
                     <h1 id="airport-name">Airport Name: </h1>
-                    <!--<h2 id="destination">Destination: </h2>-->
                 </header>
                 <table id="weather">
                     <tr>
