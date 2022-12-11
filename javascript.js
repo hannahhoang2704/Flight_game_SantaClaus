@@ -1,6 +1,5 @@
 'use strict';
 
-
 //start game page_ index.html
 
 const search = document.getElementById('start');                //button to fetch all the airports in chosen city
@@ -21,7 +20,7 @@ const windSpeed = document.getElementById('airport-wind');
 const weatherIcon = document.getElementById('weather-icon');
 
 let icao_start;                       //ICAO of the depature airport
-const icao_rovaniemi = 'EFRO';//ICAO of Rovaniemi
+const icao_rovaniemi = 'EFRO';        //ICAO of Rovaniemi
 const pos_Rov = [66.565, 25.83];
 let distanceTotal;
 let currentAirport = ' ';
@@ -38,11 +37,10 @@ let correctAnswer;
 //Rock Paper Scicssors
 const rps_div = document.getElementById('rps');
 
-
 //update gifts
 //giftsUpdate.innerText = gifts;
-//Add maps
 
+//Add maps
 let map;
 
 
@@ -104,16 +102,14 @@ async function getAirportPosition(icao) {
   try {
 
     const userName = document.querySelector('#user-name').value;
-    document.getElementById(
-        'welcome').innerText = `Hi ${userName}, let's start your journey!`;
+    //document.getElementById('welcome').innerText = `Hi ${userName}, let's start your journey!`;
     const response = await fetch(
         'http://127.0.0.1:5100/gamerinfo?name=' + userName + '&location=' +
         icao);    // starting data download, fetch returns a promise which contains an object of type 'response'
     const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     const pos = [jsonData.airport.Lat, jsonData.airport.Long];                                  // create position array for leaflet library
-    console.log(jsonData);     // log the result to the console
-    console.log(jsonData.airport.Name, jsonData.airport.Lat,
-        jsonData.airport.Long);
+    console.log(jsonData);                                                              // log the result to the console
+    //console.log(jsonData.airport.Name, jsonData.airport.Lat,jsonData.airport.Long);
 
     // Show the airport name to the screen
     currentAirport = jsonData.airport.Name;
@@ -191,12 +187,9 @@ async function fetch_question_quiz() {
     correctAnswer = quizData.answer;
     answerSelection.innerHTML = '';
     quiz(question_screen);
-
     return question_screen;
   } catch (error) {
     console.log(error.message);
-  } finally {                                         // finally = this is executed anyway, whether the execution was successful or not
-    //console.log("log get airport distance")
   }
 };
 
@@ -207,15 +200,28 @@ function mathForGifts(changeValue) {
   return gifts;
 }
 
+//fetch gifts amount back to database and server
+async function updateGiftsInDB(gifts) {
+  try {
+    const response = await fetch('http://127.0.0.1:5100/updategifts/' + gifts);    // starting data download, fetch returns a promise which contains an object of type 'response'
+    const giftData = await response.json();          // retrieving the data retrieved from the response object using the json() function
+    return giftData;
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
+
+
 //fetch the reward/robbery that affect gift change from Database
 async function changeGift(change) {
   try {
     const response = await fetch('http://127.0.0.1:5100/giftschange/' + change);    // starting data download, fetch returns a promise which contains an object of type 'response'
     const giftChangeData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(giftChangeData);
+    await mathForGifts(giftChangeData);
     console.log(gifts);
-    mathForGifts(giftChangeData);
-
+    await updateGiftsInDB(gifts);
   } catch (error) {
     console.log(error.message);
   }
@@ -228,11 +234,11 @@ async function checkAnswer() {
   console.log(playerAnswer);
   console.log(gifts);
   if (playerAnswer == correctAnswer) {
-    console.log('Correct answer');
+    //console.log('Correct answer');
     answerSelection.innerHTML = `Congrats! Your answer is correct. We send you some treasure box. Check your gifts now!`;
     changeGift('add');
   } else {
-    console.log('Wrong answer');
+    //console.log('Wrong answer');
     answerSelection.innerHTML = `Oops! Your answer is wrong. Sadly your gifts also got robbed! `;
     changeGift('deduct');
   }
@@ -250,7 +256,6 @@ async function checkAnswer() {
 
 //push true,false options and button for quiz game
 function pushQuiz() {
-
   const selectForQuiz = document.createElement('select');
   selectForQuiz.setAttribute('id', 'answer-select');
   const optionTrue = document.createElement('option');
@@ -269,7 +274,6 @@ function pushQuiz() {
   quizButton.addEventListener('click', checkAnswer);
   quizButton.onclick = function() {
     document.getElementById('question').innerHTML = '';
-
   }
 
 }
@@ -306,17 +310,17 @@ async function checkComputerOption(playerValue) {                 // asynchronou
     const response = await fetch('http://127.0.0.1:5100/rpsgame/' + playerValue);    // starting data download, fetch returns a promise which contains an object of type 'response'
     const jsonData = await response.json();          // retrieving the data retrieved from the response object using the json() function
     console.log(jsonData);
-    console.log(jsonData.computerChoice, jsonData.compScore, jsonData.status, jsonData.result);
+    console.log(jsonData.computerChoice, jsonData.status, jsonData.result);
     const fetchResultDiv = document.getElementById('fetch-result-div');
     const p = document.createElement('p');
     p.appendChild(document.createTextNode("Computer chooses: "));
     fetchResultDiv.appendChild(p);
-    const compValue = parseInt(jsonData.compScore);
+    const compValue = parseInt(jsonData.compImg);
     const imgPlayerOption = document.createElement('img');
     imgPlayerOption.src = `image/game-image/rock-paper-scissors/${compValue}.png`;
     fetchResultDiv.appendChild(imgPlayerOption);
     const h2 = document.createElement('h2');
-    h2.setAttribute('id', 'rqs-statement');
+    h2.setAttribute('id', 'rps-statement');
     h2.appendChild(document.createTextNode(`${jsonData.result}`));
     mainProgramDiv.appendChild(h2);
     if (jsonData.status == -1){
@@ -337,23 +341,26 @@ function showRpsResult(){
 
 //when button is clicked, collect the player's option in RPS game and compare with Computer game
 async function rpsExecute(evt){
- evt.preventDefault();
- const fetchResultDiv = document.createElement('div');
- fetchResultDiv.setAttribute('id', 'fetch-result-div')
- rps_div.appendChild(fetchResultDiv);
- const p = document.createElement('p');
- p.appendChild(document.createTextNode("You've choose: "));
- fetchResultDiv.appendChild(p);
- const selectRps = document.getElementById('select-rps');
- const playerValue = selectRps.options[selectRps.selectedIndex].value;
- console.log(playerValue)
- const imgPlayerOption = document.createElement('img');
- imgPlayerOption.src = `image/game-image/rock-paper-scissors/${playerValue}.png`;
- fetchResultDiv.appendChild(imgPlayerOption);
- console.log(playerValue)
- await checkComputerOption(playerValue);
- await showRpsResult();
+   evt.preventDefault();
+   const fetchResultDiv = document.createElement('div');
+   fetchResultDiv.setAttribute('id', 'fetch-result-div')
+   rps_div.appendChild(fetchResultDiv);
+   fetchResultDiv.innerHTML = "";
+   const p = document.createElement('p');
+   p.appendChild(document.createTextNode("You've choose: "));
+   fetchResultDiv.appendChild(p);
+   const selectRps = document.getElementById('select-rps');
+   const playerValue = selectRps.options[selectRps.selectedIndex].value;
+   console.log(playerValue)
+   const imgPlayerOption = document.createElement('img');
+   imgPlayerOption.src = `image/game-image/rock-paper-scissors/${playerValue}.png`;
+   fetchResultDiv.appendChild(imgPlayerOption);
+   console.log(playerValue)
+   await checkComputerOption(playerValue);
+   await showRpsResult();
 };
+
+
 //Check how far from departure airport to Rovaniemi
 async function airport_start(evt) {
   evt.preventDefault();
@@ -367,7 +374,6 @@ async function airport_start(evt) {
   await fetch_question_quiz();
 
   pushQuiz();
-
 }
 
 /* draw the map with two positions and a line between them */
@@ -400,11 +406,7 @@ function airportOptions(jsonData) {
   button_airport.setAttribute('class', 'game-btn');
   button_airport.appendChild(document.createTextNode('Take off!'));
   button_airport.setAttribute('id', 'button-airport');
-
   div_ICAO.appendChild(button_airport);
-
-////////////////post method to get ICAO of airport to flask server!!!!
-
   button_airport.addEventListener('click', airport_start); //click button to choose the departure airport
   button_airport.onclick = function() {
     document.getElementById('user-info').innerHTML = '';
@@ -436,6 +438,8 @@ async function airportFetches() {                 // asynchronous function is de
 //call-back function to fetch all airport in chosen city
 search.addEventListener('click', fetch_airport);
 
+//Game over when there's no gift
 if (gifts == 0){
-  alert('Game over!')
+  alert('Game over! You have 0 gift');
+  location = "Exit.html";
 }
